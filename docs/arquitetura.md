@@ -24,6 +24,8 @@
 | Requisito | Ferramenta/Solução | Versão |Descrição |
 |----|-----|---|---|
 
+## Visão de Casos de Uso
+
 ## Visão Lógica
  
  
