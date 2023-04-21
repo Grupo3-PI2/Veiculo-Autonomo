@@ -1,25 +1,25 @@
 #   Arquitetura do projeto
  
-### Finalidade
-
+### Finalidade (João Pedro)
+O documento estabelecerá uma visão da arquitetura de software adotada no sistema (Nome do app). Com isso, ele tem como finalidade monitorar as atividades do carro autônomo desenvolvido pela equipe do projeto. Disponibilizando informações para garantir um melhor controle e acompanhamento do veículo.
  
-### Escopo
+### Escopo (João Pedro)
 
 
 ## Visão Geral
  
  
-### Representação da Arquitetura
+### Representação da Arquitetura (João Pedro)
  
 
-#### React JS
+#### React JS (João Pedro)
 
 
-### Metas e restrições da arquitetura
+### Metas e restrições da arquitetura (João Pedro)
  
 
 
-### Ambiente e Ferramentas de Desenvolvimento
+### Ambiente e Ferramentas de Desenvolvimento (João Pedro)
  
 | Requisito | Ferramenta/Solução | Versão |Descrição |
 |----|-----|---|---|
@@ -37,10 +37,10 @@
 ### Visão Geral
 
 
-### Usabilidade
+### Usabilidade (João Pedro)
 
 
-### Portabilidade 
+### Portabilidade (João Pedro)
 
 
 ## Referências
