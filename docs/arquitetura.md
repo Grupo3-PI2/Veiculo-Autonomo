@@ -14,7 +14,7 @@
 
  No sistema Carnalize foi decidido a criação do serviço:
  
-- **Frontend**: Responsável pela visualização de todo o sistema e interação com usuário.
+- **Front-end**: Responsável pela visualização de todo o sistema e interação com usuário.
 
 <p align ="justify">Para o desenvolvimento do serviço será utilizado a seguinte tecnologia:</p>
 
@@ -34,17 +34,16 @@ Metas:
  
 Restrições:
 
-+ Conexão com a Internet;
++ Conexão com a Internet.
 
-### Ambiente e Ferramentas de Desenvolvimento (João Pedro)
+### Ambiente e Ferramentas de Desenvolvimento
  
-| Requisito | Ferramenta/Solução | Versão |Descrição |
+| Requisito | Ferramenta | Versão |Descrição |
 |----|-----|---|---|
-|Linguagem|Javascript|ES6|Linguagem de programação interpretada e multiparadigma|
+|Linguagem|Javascript|ES6|Linguagem de programação|
 |Framework|React.js|18.2.0|Framework React|
-|Virtualização|Docker|20.10.17|Plataforma aberta para empacotamento e execução de aplicações em contêineres|
+|Virtualização|Docker|20.10.17| Plataforma aberta que facilita a criação e administração de ambientes isolados|
 |Virtualização|Docker-compose|2.17.12|Gerenciamento de contêiner|
-|Biblioteca|Jest|28.1.3|Biblioteca de testes|
 
 ## Visão de Casos de Uso
 <p align ="justify">Os casos de uso do sistema Carnalize serão apresentados abaixo:</p>
@@ -106,7 +105,9 @@ Restrições:
 
 + Alura. <b>React: o que é, como funciona e um Guia dessa popular ferramenta JS</b>. Disponível em: [ReactJS](https://www.alura.com.br/artigos/react-js). Acesso em 21 de abril de 2023.
 
-+ Repositório Institucional Associação Educativa Evangélica. <b></b> http://repositorio.aee.edu.br/bitstream/aee/1106/3/TCC2_2018_2_GabrielLeiteDias_MatheusLimadeAlbuquerque_Apendice2.pdf
++ Docker docs. <b>Docker overview</b>. Disponível em: [Docker](https://docs.docker.com/get-started/overview/). Acesso em 21 de abril de 2023.
+
++ Repositório Institucional Associação Educativa Evangélica. <b>Documento de Arquitetura de Software</b> Disponível em: [Documento de arquitetura de Software](http://repositorio.aee.edu.br/bitstream/aee/1106/3/TCC2_2018_2_GabrielLeiteDias_MatheusLimadeAlbuquerque_Apendice2.pdf)
  
 ## Versionamento
  
