@@ -1,7 +1,7 @@
 #   Arquitetura do projeto
  
 ### Finalidade 
-<p align = "justify">O documento estabelecerá uma visão da arquitetura de software adotada no sistema Carnaliza. Com isso, ele tem como finalidade monitorar as atividades do carro autônomo desenvolvido pela equipe do projeto. Disponibilizando informações para garantir um melhor controle e acompanhamento do veículo.</p>
+<p align = "justify">O documento estabelecerá uma visão da arquitetura de software adotada no sistema Carnalize. Com isso, ele tem como finalidade monitorar as atividades do carro autônomo desenvolvido pela equipe do projeto. Disponibilizando informações para garantir um melhor controle e acompanhamento do veículo.</p>
  
 ### Escopo
 <p align = "justify">Essa documentação foi elaborada sobre a visão de arquitetura de software que será utilizada para a implementação do projeto Carnalize. Serão abordados os padrões de arquitetura, o framework que será usado no desenvolvimento do projeto e as ferramentas utilizadas para auxílio da equipe. O objetivo é fornecer um monitoramento sobre o carrinho, notificando o usuário de suas atividades.</p>
