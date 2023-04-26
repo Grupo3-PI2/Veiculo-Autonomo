@@ -22,7 +22,7 @@ No sistema Carnalize foi decidido a criação do serviço:
 
 #### React JS
 
-[![reactJS](images/reactJS.png)](images/reactJS.png)
+[![reactJS](images/Interface/reactJS.png)](images/Interface/reactJS.png)
 
 <p align ="justify">No front-end é onde ocorre a interação e apresentação das informações ao usuário da aplicação. React.js é um framework Javascript utilizado para desenvolver interfaces de usuário em aplicações web, com alto nível de valor agregado e qualidade final no produto, com fácil aprendizagem e facilidade de aplicação por parte da equipe. Ele é popular por ser fácil de usar, altamente flexível e escalável, e é usado por muitas empresas de tecnologia, incluindo o Facebook, Instagram e Airbnb.</p>
 
@@ -51,7 +51,7 @@ Restrições:
 
 <p align ="justify">Os casos de uso do sistema Carnalize serão apresentados abaixo:</p>
 
-[![CasosDeUso](images/interface_diagrama_caso_de_uso.png)](images/interface_diagrama_caso_de_uso.png)
+[![CasosDeUso](images/Interface/interface_diagrama_caso_de_uso.png)](images/Interface/interface_diagrama_caso_de_uso.png)
 
 ## Visão Lógica
 
@@ -61,7 +61,7 @@ Restrições:
 
 <p align ="justify">Nesse diagrama, os pacotes estão divididos de acordo com as funcionalidades do aplicativo.</p>
 
-[![Pacotes](images/interface_diagrama_de_pacotes.png)](images/interface_diagrama_de_pacotes.png)
+[![Pacotes](images/Interface/interface_diagrama_de_pacotes.png)](images/Interface/interface_diagrama_de_pacotes.png)
 
 - <p align ="justify">Estado: é responsável por monitorar se o carrinho está em andamento ou parado. /p>
 
@@ -81,13 +81,13 @@ Restrições:
 
 <p align ="justify">O diagrama de sequência é uma solução dinâmica de modelagem em UML bastante utilizada para demonstrar um conjunto de interações entre os componentes de um sistema. Em nossa implementação utilizamos este diagrama de sequência para mostrar alguns processos de nosso sistema.</p>
 
-[![Sequencia](images/interface_diagrama_de_sequencia.png)](images/interface_diagrama_de_sequencia.png)
+[![Sequencia](images/Interface/interface_diagrama_de_sequencia.png)](images/Interface/interface_diagrama_de_sequencia.png)
 
 ### Diagrama de comunicação
 
 <p align ="justify">Um Diagrama de Comunicação é uma solução UML que visa mostrar como objetos conversão entre si para desempenhar o comportamento de um cenário de caso de uso. Essa diretriz descreve a anotação de UML para esse constructo.</p>
 
-[![Sequencia](images/interface_diagrama_de_comunicacao.png)](images/interface_diagrama_de_comunicacao.png)
+[![Sequencia](images/Interface/interface_diagrama_de_comunicacao.png)](images/Interface/interface_diagrama_de_comunicacao.png)
 
 ### Diagrama de atividades
 
@@ -95,7 +95,7 @@ Restrições:
 
 <p align ="justify">Este diagrama ajuda a complementar a representação da visão de processos da arquitetura, e tomando uma abordagem com ênfase no fluxo de controle de atividades.</p>
 
-[![Atividades](images/interface_diagrama_de_atividades.png)](images/interface_diagrama_de_atividades.png)
+[![Atividades](images/Interface/interface_diagrama_de_atividades.png)](images/Interface/interface_diagrama_de_atividades.png)
 
 ### Usabilidade
 
