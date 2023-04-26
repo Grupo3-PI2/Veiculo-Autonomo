@@ -111,13 +111,11 @@ Restrições:
 
 ## Referências
 
-- Alura. <b>React: o que é, como funciona e um Guia dessa popular ferramenta JS</b>. Disponível em: [ReactJS](https://www.alura.com.br/artigos/react-js). Acesso em 21 de abril de 2023.
++ Alura. <b>React: o que é, como funciona e um Guia dessa popular ferramenta JS</b>. Disponível em: [ReactJS](https://www.alura.com.br/artigos/react-js). Acesso em 21 de abril de 2023.
 
-- Repositório Institucional Associação Educativa Evangélica. <b></b> http://repositorio.aee.edu.br/bitstream/aee/1106/3/TCC2_2018_2_GabrielLeiteDias_MatheusLimadeAlbuquerque_Apendice2.pdf
++ Docker docs. <b>Docker overview</b>. Disponível em: [Docker](https://docs.docker.com/get-started/overview/). Acesso em 21 de abril de 2023.
 
-* Docker docs. <b>Docker overview</b>. Disponível em: [Docker](https://docs.docker.com/get-started/overview/). Acesso em 21 de abril de 2023.
-
-* Repositório Institucional Associação Educativa Evangélica. <b>Documento de Arquitetura de Software</b> Disponível em: [Documento de arquitetura de Software](http://repositorio.aee.edu.br/bitstream/aee/1106/3/TCC2_2018_2_GabrielLeiteDias_MatheusLimadeAlbuquerque_Apendice2.pdf)
++ Repositório Institucional Associação Educativa Evangélica. <b>Documento de Arquitetura de Software</b> Disponível em: [Documento de arquitetura de Software](http://repositorio.aee.edu.br/bitstream/aee/1106/3/TCC2_2018_2_GabrielLeiteDias_MatheusLimadeAlbuquerque_Apendice2.pdf)
 
 ## Versionamento
 
