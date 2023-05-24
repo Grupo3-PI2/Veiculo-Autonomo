@@ -12,3 +12,5 @@ Aqui estão disponibilizadas as informações dos hardwares e códigos embarcado
 * Módulo câmera
 
 ### Códigos
+
+* sensor_dist.py -- responssável pelos sensores ultrassônicos de distância  
