@@ -20,15 +20,20 @@ const Alert = () => {
   );
 };
 
-export default HomePageView = ({ ...props }) => {
+const HomePageView = ({ ...props }) => {
   const [progress, setProgress] = useState(100);
   const [isCarStop, setIsCarStop] = useState(false);
 
   return (
     <SafeAreaView style={[styles.viewPager, styles.container]}>
-      <View style={[styles.container, { flex: 0.5 }]}>
-        <Text style={styles.title}>Caranalizer</Text>
+
+      {/* create a rectangle with background color */}
+      <View style={styles.header} />
+
+      <View style={[styles.container, { flex: 0.3 }]}>
+        <Text style={styles.title}>Carnalize</Text>
       </View>
+
 
       {isCarStop ? (
         <Alert />
@@ -82,7 +87,7 @@ export default HomePageView = ({ ...props }) => {
 const styles = StyleSheet.create({
   viewPager: {
     flex: 1,
-    backgroundColor: "#E0E0E0",
+    backgroundImage: "linear-gradient(189.63deg, #FFFFFF 45.05%, #E4EBF5 100%)",
   },
   page: {
     justifyContent: "center",
@@ -95,12 +100,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 40,
-    fontWeight: 600,
+    fontWeight: 849,
+    color: "white",
   },
   bar: {
     width: 350,
     position: "relative",
-    backgroundColor: "white",
+    backgroundColor: "#C7D3EB",
     height: 10,
     borderRadius: 5,
   },
@@ -171,4 +177,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 50,
   },
+  header: {
+    position: "absolute",
+    width: "100%",
+    height: "142px",
+    left: "0px",
+    top: "0px",
+    
+    backgroundColor: "#4FA6FF",
+  }
 });
+
+export default HomePageView;
