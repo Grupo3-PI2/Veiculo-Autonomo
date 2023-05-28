@@ -85,8 +85,22 @@ const HomePageView = ({ ...props }) => {
 };
 
 const NotificationsPageView = () => {
-  const [progress, setProgress] = useState(100);
   const [isCarStop, setIsCarStop] = useState(false);
+  var notifications = [];
+  notifications.push(
+    {
+      icon: null,
+      text: "O carro iniciou o movimento",
+    },
+    {
+      icon: null,
+      text: "O carro está parado",
+    },
+    {
+      icon: <Ionicons name="warning-outline" color="black" size={20} />,
+      text: "Um objeto no caminho foi detectado",
+    },
+    )
 
   return (
     <SafeAreaView style={[styles.viewPager, styles.container]}>
@@ -96,6 +110,19 @@ const NotificationsPageView = () => {
         <Text style={styles.title}>Notificações</Text>
       </View>
       <View style={styles.topBar} />
+
+      <View style={styles.infoContainer}>
+        <View style={styles.line} />
+
+        <View style={styles.notification}>
+          {notifications.map((notification, index) => (
+            <View key={index} style={styles.notificationItem}>
+              <View style={styles.notificationIcon}>{notification.icon}</View>
+              <Text style={styles.infoText}>{notification.text}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
 
     </SafeAreaView>
   );
@@ -112,7 +139,7 @@ const App = () => {
           component={HomePageView}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" color={color} size={size} />
+              <Ionicons name="home" color={color} size={size} />
             ),
             headerShown: false,
           }}
@@ -122,7 +149,7 @@ const App = () => {
           component={NotificationsPageView}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="notifications-outline" color={color} size={size} />
+              <Ionicons name="notifications" color={color} size={size} />
             ),
             headerShown: false,
           }}
@@ -137,6 +164,7 @@ const styles = StyleSheet.create({
     flex: 0,
     backgroundImage: "linear-gradient(189.63deg, #FFFFFF 45.05%, #E4EBF5 100%)",
     height: "100vh",
+    justifyContent: "flex-start",
   },
   page: {
     justifyContent: "center",
@@ -144,6 +172,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -244,6 +273,36 @@ const styles = StyleSheet.create({
     height: "142px",
     left: "0px",
     top: "0px",
+  },
+  line: {
+    height: 1,
+    width: "90%",
+    backgroundColor: "black",
+    marginTop: "2rem",
+    marginRight: "1rem",
+    marginLeft: "1rem",
+  },
+  notification: {
+    display: "flex",
+    flexWrap: "wrap",
+    marginRight: "2rem",
+  },
+  notificationItem: {
+    display: "flex", 
+    flexDirection: "row",
+    gap: "1.5rem",
+    borderBottomWidth: 1,
+    marginLeft: "1rem",
+    width: "100%",
+    minHeight: "3rem",
+    alignItems: "center",
+    paddingTop: "10px",
+    paddingBottom: "10px"
+  },
+  notificationIcon: {
+    width: "10px",
+    height: "10px",
+    justifyContent: "center"
   }
 });
 
