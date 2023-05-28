@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Alert = () => {
@@ -28,12 +30,10 @@ const HomePageView = ({ ...props }) => {
     <SafeAreaView style={[styles.viewPager, styles.container]}>
 
       {/* create a rectangle with background color */}
-      <View style={styles.header} />
-
-      <View style={[styles.container, { flex: 0.3 }]}>
+      <View style={[styles.header, { flex: 0.3 }]}>
         <Text style={styles.title}>Carnalize</Text>
       </View>
-
+      <View style={styles.topBar} />
 
       {isCarStop ? (
         <Alert />
@@ -84,10 +84,59 @@ const HomePageView = ({ ...props }) => {
   );
 };
 
+const NotificationsPageView = () => {
+  const [progress, setProgress] = useState(100);
+  const [isCarStop, setIsCarStop] = useState(false);
+
+  return (
+    <SafeAreaView style={[styles.viewPager, styles.container]}>
+
+      {/* create a rectangle with background color */}
+      <View style={[styles.header, { flex: 0.3 }]}>
+        <Text style={styles.title}>Notificações</Text>
+      </View>
+      <View style={styles.topBar} />
+
+    </SafeAreaView>
+  );
+};
+
+const Tab = createBottomTabNavigator();
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={HomePageView}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" color={color} size={size} />
+            ),
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen
+          name="Notifications"
+          component={NotificationsPageView}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="notifications-outline" color={color} size={size} />
+            ),
+            headerShown: false,
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+};
+
 const styles = StyleSheet.create({
   viewPager: {
-    flex: 1,
+    flex: 0,
     backgroundImage: "linear-gradient(189.63deg, #FFFFFF 45.05%, #E4EBF5 100%)",
+    height: "100vh",
   },
   page: {
     justifyContent: "center",
@@ -102,6 +151,9 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 849,
     color: "white",
+    top: "0px",
+    position: "absolute",
+    marginTop: "3rem",
   },
   bar: {
     width: 350,
@@ -183,9 +235,16 @@ const styles = StyleSheet.create({
     height: "142px",
     left: "0px",
     top: "0px",
+    alignItems: "center",
     
     backgroundColor: "#4FA6FF",
+  },
+  topBar: {
+    width: "100%",
+    height: "142px",
+    left: "0px",
+    top: "0px",
   }
 });
 
-export default HomePageView;
+export default App;
