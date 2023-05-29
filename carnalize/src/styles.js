@@ -144,7 +144,17 @@ const styles = StyleSheet.create({
       width: "10px",
       height: "10px",
       justifyContent: "center"
-    }
+    },
+    input : {
+      backgroundColor: "#E4EBF5",
+      borderRadius: "5px",
+      padding: "5px",
+      margin: "1rem",
+    },
+    resetBtn: {
+      margin: "1rem",
+      backgroundColor: "#FF6666",
+    },
   });
 
   export default styles;
