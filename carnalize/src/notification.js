@@ -8,24 +8,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import styles from "./styles";
 
-const NotificationsPageView = () => {
+const NotificationsPageView = ({ ...props }) => {
     const [isCarStop, setIsCarStop] = useState(false);
-    var notifications = [];
-    notifications.push(
-      {
-        icon: null,
-        text: "O carro iniciou o movimento",
-      },
-      {
-        icon: null,
-        text: "O carro está parado",
-      },
-      {
-        icon: <Ionicons name="warning-outline" color="black" size={20} />,
-        text: "Um objeto no caminho foi detectado",
-      },
-      )
-  
+    var notifications = props.notifications;
+
     return (
       <SafeAreaView style={[styles.viewPager, styles.container]}>
   

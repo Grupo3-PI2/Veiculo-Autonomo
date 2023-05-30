@@ -12,7 +12,7 @@ import io from 'socket.io-client';
 import styles from "./styles";
 import { Alert } from "./components/alert";
   
-const HomePageView = ({ ...props }) => {
+const HomePageView = ({ addNotification }) => {
   const [objectFound, setObjectFound] = useState(false);
   const [showFirstPage, setShowFirstPage] = useState(true);
   const [routeDistance, setRouteDistance] = useState(0);
@@ -32,17 +32,40 @@ const HomePageView = ({ ...props }) => {
     socketRef.current.on('carProgress', (progress) => {
       console.log('Car progress:', progress);
       setCarProgress(progress);
+
+      // depending on the car progress, add a notification
+      if (!progress.isRunning) {
+        addNotification(
+          {
+            icon: <Ionicons name="car-outline" color="black" size={20} />,
+            text: "O carro está parado",
+          }
+        );
+      }
     });
 
     socketRef.current.on('objectFound', (progress) => {
       setCarProgress(progress);
       setObjectFound(true);
+      addNotification(
+        {
+          icon: <Ionicons name="warning-outline" color="black" size={20} />,
+          text: "Um objeto no caminho foi detectado",
+        }
+      );
     });
 
     socketRef.current.on('objectRemoved', (progress) => {
       console.log('Object removed:', progress);
       setCarProgress(progress);
       setObjectFound(false);
+      addNotification(
+        {
+          // show an okay icon
+          icon: <Ionicons name="checkmark-outline" color="black" size={20} />,
+          text: "O objeto foi removido",
+        }
+      );
     });
 
     return () => {
