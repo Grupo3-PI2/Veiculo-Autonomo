@@ -7,7 +7,6 @@ cors = CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*', async_mode='threading')
 
 carProgress = {
-    "progress": 0,
     "speed": 0,
     "isRunning": False,
     "distance": 0
@@ -53,7 +52,6 @@ def handle_reset_car():
     reset_car()
 
 def reset_car():
-    carProgress["progress"] = 0
     carProgress["speed"] = 0
     carProgress["isRunning"] = False
     carProgress["distance"] = 0

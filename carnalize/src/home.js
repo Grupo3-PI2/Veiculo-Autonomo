@@ -29,6 +29,22 @@ const HomePageView = ({ addNotification }) => {
   useEffect(() => {
     socketRef.current = io('http://localhost:4000');
 
+    socketRef.current.on('connect', () => {
+      console.log('Connected to socket');
+      setErrorMessage('');
+    });
+  
+    socketRef.current.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+      if (error.message !== 'Error connecting with the server') {
+        addNotification({
+          icon: <Ionicons name="alert-circle-outline" color="black" size={20} />,
+          text: "Error connecting with the server",
+        });
+      }
+      setErrorMessage('Error connecting to the server');
+    });
+
     socketRef.current.on('carProgress', (progress) => {
       console.log('Car progress:', progress);
       setCarProgress(progress);
@@ -61,7 +77,6 @@ const HomePageView = ({ addNotification }) => {
       setObjectFound(false);
       addNotification(
         {
-          // show an okay icon
           icon: <Ionicons name="checkmark-outline" color="black" size={20} />,
           text: "O objeto foi removido",
         }
@@ -184,6 +199,8 @@ const HomePageView = ({ addNotification }) => {
           </View>
 
           <View style={styles.container}>
+            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
             <View style={[styles.container, styles.infoContainer]}>
               <Text style={styles.infoText}>
                 Peso atual da carga:{" "}
