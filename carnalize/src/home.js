@@ -7,8 +7,8 @@ import {
   TextInput,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import io from 'socket.io-client';
- 
+import ROSLIB from 'roslib';
+
 import styles from "./styles";
 import { Alert } from "./components/alert";
   
@@ -23,69 +23,112 @@ const HomePageView = ({ addNotification }) => {
     isRunning: false,
     distance: 0,
   });
+  const [startFollowerService, setStartFollowerService] = useState(null);
+  const [stopFollowerService, setStopFollowerService] = useState(null);
 
   const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:4000');
-
-    socketRef.current.on('connect', () => {
-      console.log('Connected to socket');
-      setErrorMessage('');
-    });
-  
-    socketRef.current.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
-      if (error.message !== 'Error connecting with the server') {
-        addNotification({
-          icon: <Ionicons name="alert-circle-outline" color="black" size={20} />,
-          text: "Error connecting with the server",
-        });
-      }
-      setErrorMessage('Error connecting to the server');
+    var ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090'
     });
 
-    socketRef.current.on('carProgress', (progress) => {
-      console.log('Car progress:', progress);
-      setCarProgress(progress);
+    ros.on('connection', function() {
+      console.log('Connected to websocket server.');
+    });
 
-      // depending on the car progress, add a notification
-      if (!progress.isRunning) {
+    ros.on('error', function(error) {
+      console.log('Error connecting to websocket server: ', error);
+    });
+
+    ros.on('close', function() {
+      console.log('Connection to websocket server closed.');
+    });
+
+    var objectDetectedListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/object_detected',
+      messageType: 'sensor_msgs/Range'
+    });
+
+    var objectRemovedListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/object_removed',
+      messageType: 'sensor_msgs/Range'
+    });
+
+    objectDetectedListener.subscribe(function(message) {
+      console.log('Distance:', message.range);
+      let distance = message.range;
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        isRunning: false,
+        speed: 0
+      }));
+
+      if (!objectFound) {
+        setObjectFound(true);
         addNotification(
           {
-            icon: <Ionicons name="car-outline" color="black" size={20} />,
-            text: "O carro está parado",
+            icon: <Ionicons name="warning-outline" color="black" size={20} />,
+            text: "Um objeto no caminho foi detectado",
           }
         );
       }
     });
 
-    socketRef.current.on('objectFound', (progress) => {
-      setCarProgress(progress);
-      setObjectFound(true);
-      addNotification(
-        {
-          icon: <Ionicons name="warning-outline" color="black" size={20} />,
-          text: "Um objeto no caminho foi detectado",
-        }
-      );
-    });
+    objectRemovedListener.subscribe(function(message) {
+      setCarProgress(prevState => ({
+        ...prevState,
+        isRunning: true,
+        speed: 0
+      }));
 
-    socketRef.current.on('objectRemoved', (progress) => {
-      console.log('Object removed:', progress);
-      setCarProgress(progress);
       setObjectFound(false);
-      addNotification(
-        {
-          icon: <Ionicons name="checkmark-outline" color="black" size={20} />,
-          text: "O objeto foi removido",
-        }
-      );
     });
 
-    return () => {
-      socketRef.current.disconnect();
-    };
+    setStartFollowerService(new ROSLIB.Service({
+      ros: ros,
+      name: '/start_follower',
+      serviceType: 'std_srvs/Empty'
+    }))
+
+    setStopFollowerService(new ROSLIB.Service({
+      ros: ros,
+      name: '/stop_follower',
+      serviceType: 'std_srvs/Empty'
+    }))
+    // socketRef.current.on('carProgress', (progress) => {
+    //   console.log('Car progress:', progress);
+    //   setCarProgress(progress);
+
+    //   // depending on the car progress, add a notification
+    //   if (!progress.isRunning) {
+    //     addNotification(
+    //       {
+    //         icon: <Ionicons name="car-outline" color="black" size={20} />,
+    //         text: "O carro está parado",
+    //       }
+    //     );
+    //   }
+    // });
+
+    // socketRef.current.on('objectRemoved', (progress) => {
+    //   console.log('Object removed:', progress);
+    //   setCarProgress(progress);
+    //   setObjectFound(false);
+    //   addNotification(
+    //     {
+    //       icon: <Ionicons name="checkmark-outline" color="black" size={20} />,
+    //       text: "O objeto foi removido",
+    //     }
+    //   );
+    // });
+
+    // return () => {
+    //   socketRef.current.disconnect();
+    // };
   }, []);
 
   const handleStartCar = () => {
@@ -93,11 +136,27 @@ const HomePageView = ({ addNotification }) => {
       return;
     }
 
-    socketRef.current.emit('startCar');
+    var request = new ROSLIB.ServiceRequest({});
+    startFollowerService.callService(request, function(result) {
+      console.log('Start Service response:', result);
+    });
+
+    setCarProgress(prevState => ({
+      ...prevState,
+      isRunning: true
+    }));
   };
 
   const handleStopCar = () => {
-    socketRef.current.emit('stopCar');
+    var request = new ROSLIB.ServiceRequest({});
+    stopFollowerService.callService(request, function(result) {
+      console.log('Stop Service response:', result);
+    });
+
+    setCarProgress(prevState => ({
+      ...prevState,
+      isRunning: false
+    }));
   };
 
   const handleResetCar = () => {
@@ -220,25 +279,25 @@ const HomePageView = ({ addNotification }) => {
               </Text>
             </View>
           </View>
+
+          {!showFirstPage ? (
+            <View style={[styles.container, { flex: 0.5 }]}>
+              {carProgress.isRunning ? (
+                <TouchableOpacity style={styles.btn} onPress={handleStopCar}>
+                  <Text style={styles.btnText}>Parar o movimento</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.btn} onPress={handleStartCar}>
+                  <Text style={styles.btnText}>Iniciar o movimento</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={handleResetCar}>
+                <Text style={styles.btnText}>Resetar o progresso</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
       )}
-
-      {!showFirstPage ? (
-        <View style={[styles.container, { flex: 0.5 }]}>
-          {carProgress.isRunning ? (
-            <TouchableOpacity style={styles.btn} onPress={handleStopCar}>
-              <Text style={styles.btnText}>Parar o movimento</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.btn} onPress={handleStartCar}>
-              <Text style={styles.btnText}>Iniciar o movimento</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={handleResetCar}>
-            <Text style={styles.btnText}>Resetar o progresso</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
     </SafeAreaView>
   );
 };

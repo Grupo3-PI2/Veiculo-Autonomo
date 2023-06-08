@@ -1,0 +1,148 @@
+<head>
+	<script type="text/javascript" src="/home/paulo/Downloads/roslib.min.js">
+	</script>
+	<body>
+		<h1>Hello from ROSDS!</h1>
+
+		<p>Control the car from my webpage</p>
+
+		<button onclick="startFollower()">Start</button>
+		<button onclick="stopFollower()">Stop</button>
+		<button onclick="moveForward()">Forward</button>
+		<button onclick="moveBackward()">Backward</button>
+		<button onclick="turnLeft()">Left</button>
+		<button onclick="turnRight()">Right</button>
+
+		<script type="text/javascript">
+			var ros = new ROSLIB.Ros({
+				url : 'ws://localhost:9090'
+			});
+			
+			ros.on('connection', function() {
+				console.log('Connected to websocket server.');
+			});
+
+			ros.on('error', function(error) {
+				console.log('Error connecting to websocket server: ', error);
+			});
+
+			ros.on('close', function() {
+				console.log('Connection to websocket server closed.');
+			});
+
+			var objectDetectedListener = new ROSLIB.Topic({
+				ros: ros,
+				name: '/object_detected',
+				messageType: 'sensor_msgs/Range'
+			});
+
+			objectDetectedListener.subscribe(function(message) {
+				// Handle the received range message
+				console.log('Range:', message.range);
+			});
+
+
+			function displayObjectDetectedMessage(object) {
+				var messageElement = document.createElement('p');
+				messageElement.textContent = 'Object detected: ' + object;
+				document.body.appendChild(messageElement);
+			}
+
+			var cmdVel = new ROSLIB.Topic({
+				ros : ros,
+				name : '/cmd_vel',
+				messageType : 'geometry_msgs/Twist'
+			});
+
+			var startFollowerService = new ROSLIB.Service({
+				ros: ros,
+				name: '/start_follower',
+				serviceType: 'std_srvs/Empty'
+			});
+
+			var stopFollowerService = new ROSLIB.Service({
+				ros: ros,
+				name: '/stop_follower',
+				serviceType: 'std_srvs/Empty'
+			});
+
+			function startFollower() {
+				var request = new ROSLIB.ServiceRequest({});
+				startFollowerService.callService(request, function(result) {
+					console.log('Start Service response:', result);
+				});
+			}
+
+			function stopFollower() {
+				var request = new ROSLIB.ServiceRequest({});
+				stopFollowerService.callService(request, function(result) {
+					console.log('Stop Service response:', result);
+				});
+			}
+
+			function moveForward() {
+				var twist = new ROSLIB.Message({
+					linear : {
+						x : 0.5,
+						y : 0.0,
+						z : 0.0
+					},
+					angular : {
+						x : 0.0,
+						y : 0.0,
+						z : 0.0
+					}
+				});
+				cmdVel.publish(twist);
+			}
+
+			function moveBackward() {
+				var twist = new ROSLIB.Message({
+					linear : {
+						x : -0.5,
+						y : 0.0,
+						z : 0.0
+					},
+					angular : {
+						x : 0.0,
+						y : 0.0,
+						z : 0.0
+					}
+				});
+				cmdVel.publish(twist);
+			}
+
+			function turnLeft() {
+				var twist = new ROSLIB.Message({
+					linear : {
+						x : 0.0,
+						y : 0.0,
+						z : 0.0
+					},
+					angular : {
+						x : 0.0,
+						y : 0.0,
+						z : 0.5
+					}
+				});
+				cmdVel.publish(twist);
+			}
+
+			function turnRight() {
+				var twist = new ROSLIB.Message({
+					linear : {
+						x : 0.0,
+						y : 0.0,
+						z : 0.0
+					},
+					angular : {
+						x : 0.0,
+						y : 0.0,
+						z : -0.5
+					}
+				});
+				cmdVel.publish(twist);
+			}
+		</script>
+	</body>
+</head>

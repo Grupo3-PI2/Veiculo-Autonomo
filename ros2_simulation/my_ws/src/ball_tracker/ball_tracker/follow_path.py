@@ -21,6 +21,8 @@ from geometry_msgs.msg import Point
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Range
 from sensor_msgs.msg  import Image
+from std_srvs.srv import Empty
+from std_msgs.msg import String
 
 class FollowPath(Node):
 
@@ -41,8 +43,11 @@ class FollowPath(Node):
             '/detected_ball',
             self.detected_ball_callback,
             10)
-
+        self.start_service = self.create_service(Empty, 'start_follower', self.start_follower_callback)
+        self.stop_service = self.create_service(Empty, 'stop_follower', self.stop_follower_callback)
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.object_detected_publisher = self.create_publisher(Range, '/object_detected', 1)
+        self.object_removed_publisher = self.create_publisher(Range, '/object_removed', 1)
 
         self.declare_parameter("rcv_timeout_secs", 1.0)
         self.declare_parameter("angular_chase_multiplier", 0.7)
@@ -76,11 +81,12 @@ class FollowPath(Node):
         self.current_time = time.time()
 
         self.is_object_detected = False
+        self.should_move = False
 
     def timer_callback(self):
         twist_cmd = Twist()
 
-        if self.is_object_detected:
+        if self.is_object_detected or self.should_move == False:
             twist_cmd.linear.x = 0.0
             self.publisher_.publish(twist_cmd)
             return
@@ -142,12 +148,25 @@ class FollowPath(Node):
         self.lastrcvtime = time.time()
 
     def detected_object_callback(self, data : Range):
-        if (data.range < 1):
+        print("data range: ", data.range)
+
+        if (data.range < 1 and not self.is_object_detected):
             print("Object detected")
-            print("Range: ", data.range)
             self.is_object_detected = True
-        else:
+            self.object_detected_publisher.publish(data)
+        elif (data.range >= 1 and self.is_object_detected):
             self.is_object_detected = False
+            self.object_removed_publisher.publish(data)
+
+    def start_follower_callback(self, request, response):
+        print("Starting follower")
+        self.should_move = True
+        return response
+    
+    def stop_follower_callback(self, request, response):
+        print("Stopping follower")
+        self.should_move = False
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
