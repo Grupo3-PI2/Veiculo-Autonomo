@@ -79,7 +79,7 @@ def generate_launch_description():
 
     follow_node = Node(
             package='ball_tracker',
-            executable='follow_ball',
+            executable='follow_path',
             parameters=[params_file, {'use_sim_time': use_sim_time}],
             remappings=[('/cmd_vel',cmd_vel_topic)],
             condition=UnlessCondition(detect_only)

@@ -25,7 +25,7 @@ setup(
         'console_scripts': [
             'detect_ball = ball_tracker.detect_ball:main',
             'detect_ball_3d = ball_tracker.detect_ball_3d:main',
-            'follow_ball = ball_tracker.follow_ball:main',
+            'follow_path = ball_tracker.follow_path:main',
             'detect_path = ball_tracker.detect_path:main',
         ],
     },

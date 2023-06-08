@@ -19,23 +19,29 @@ import math
 from rclpy.node import Node
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import Range
 from sensor_msgs.msg  import Image
 
-class FollowBall(Node):
+class FollowPath(Node):
 
     def __init__(self):
-        super().__init__('follow_ball')
-        self.subscription = self.create_subscription(
+        super().__init__('follow_path')
+        self.subscription_path = self.create_subscription(
             Point,
             '/detected_path',
             self.center_path_callback,
             10)
-        self.subscription = self.create_subscription(
+        self.subscription_sensor_distance = self.create_subscription(
+            Range,
+            '/ultrasonic_sensor_1/out',
+            self.detected_object_callback,
+            10)
+        self.subscription_ball = self.create_subscription(
             Point,
             '/detected_ball',
             self.detected_ball_callback,
             10)
-        
+
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
 
         self.declare_parameter("rcv_timeout_secs", 1.0)
@@ -69,8 +75,15 @@ class FollowBall(Node):
         self.wait_time = 0
         self.current_time = time.time()
 
+        self.is_object_detected = False
+
     def timer_callback(self):
         twist_cmd = Twist()
+
+        if self.is_object_detected:
+            twist_cmd.linear.x = 0.0
+            self.publisher_.publish(twist_cmd)
+            return
 
         steering_angle_history = []
         history_length = 10  # Define the length of the history for the moving average filter
@@ -128,9 +141,17 @@ class FollowBall(Node):
 
         self.lastrcvtime = time.time()
 
+    def detected_object_callback(self, data : Range):
+        if (data.range < 1):
+            print("Object detected")
+            print("Range: ", data.range)
+            self.is_object_detected = True
+        else:
+            self.is_object_detected = False
+
 def main(args=None):
     rclpy.init(args=args)
-    follow_ball = FollowBall()
-    rclpy.spin(follow_ball)
-    follow_ball.destroy_node()
+    follow_path = FollowPath()
+    rclpy.spin(follow_path)
+    follow_path.destroy_node()
     rclpy.shutdown()
