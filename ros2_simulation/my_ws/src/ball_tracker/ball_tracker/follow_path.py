@@ -23,6 +23,10 @@ from sensor_msgs.msg import Range
 from sensor_msgs.msg  import Image
 from std_srvs.srv import Empty
 from std_msgs.msg import String
+from std_msgs.msg import Float64
+
+
+from sensor_msgs.msg import JointState
 
 class FollowPath(Node):
 
@@ -32,22 +36,30 @@ class FollowPath(Node):
             Point,
             '/detected_path',
             self.center_path_callback,
-            10)
+            20)
         self.subscription_sensor_distance = self.create_subscription(
             Range,
             '/ultrasonic_sensor_1/out',
             self.detected_object_callback,
-            10)
+            20)
         self.subscription_ball = self.create_subscription(
             Point,
             '/detected_ball',
             self.detected_ball_callback,
-            10)
+            20)
+        # listen to "/joint_states" topic to get the current velocity of the car
+        self.subscription_joint_states = self.create_subscription(
+            JointState,
+            '/joint_states',
+            self.joint_states_callback,
+            20)
         self.start_service = self.create_service(Empty, 'start_follower', self.start_follower_callback)
         self.stop_service = self.create_service(Empty, 'stop_follower', self.stop_follower_callback)
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         self.object_detected_publisher = self.create_publisher(Range, '/object_detected', 1)
         self.object_removed_publisher = self.create_publisher(Range, '/object_removed', 1)
+        self.current_velocity_publisher = self.create_publisher(Float64, '/current_velocity', 1)
+        self.current_distance_publisher = self.create_publisher(Float64, '/current_distance', 1)
 
         self.declare_parameter("rcv_timeout_secs", 1.0)
         self.declare_parameter("angular_chase_multiplier", 0.7)
@@ -82,6 +94,8 @@ class FollowPath(Node):
 
         self.is_object_detected = False
         self.should_move = False
+        self.wheel_radius = 0.033
+        self.start_distance = 0.0
 
     def timer_callback(self):
         twist_cmd = Twist()
@@ -117,7 +131,7 @@ class FollowPath(Node):
         if not (self.center_x == 0.0 and self.center_y == 0.0):
 
             # Calculate the desired steering angle based on the curve and car position
-            steering_angle = (self.center_x - self.position_car) / self.position_car
+            steering_angle = 1.1*((self.center_x - self.position_car) / self.position_car)
 
             # Apply a moving average filter to smooth the steering angle
             steering_angle_history.append(steering_angle)
@@ -127,7 +141,7 @@ class FollowPath(Node):
 
             # Control the car based on the calculated steering angle
             twist_cmd = Twist()
-            twist_cmd.linear.x = 0.5  # Set the linear speed
+            twist_cmd.linear.x = 0.4  # Set the linear speed
             twist_cmd.angular.z = -smoothed_steering_angle  # Set the steering angle (negative sign if required)
 
             # Publish the steering command to the car
@@ -143,13 +157,10 @@ class FollowPath(Node):
     def detected_ball_callback(self, data : Point):
         ang_size = data.z*self.h_fov
         self.ball_distance = self.ball_radius/(math.atan(ang_size/2))
-        print("Ball distance from car: ", self.ball_distance);
 
         self.lastrcvtime = time.time()
 
     def detected_object_callback(self, data : Range):
-        print("data range: ", data.range)
-
         if (data.range < 1 and not self.is_object_detected):
             print("Object detected")
             self.is_object_detected = True
@@ -167,6 +178,30 @@ class FollowPath(Node):
         print("Stopping follower")
         self.should_move = False
         return response
+    
+    def joint_states_callback(self, data):
+        current_velocity = (data.velocity[0] + data.velocity[1])/2
+        current_velocity = current_velocity * self.wheel_radius
+
+
+
+        current_distance = (data.position[0] + data.position[1])/2
+        current_distance = current_distance - self.start_distance
+        
+        if self.start_distance == 0:
+            self.start_distance = current_distance
+
+        if (current_velocity < 0.01):
+            return
+    
+        msg_velocity = Float64()
+        msg_velocity.data = current_velocity
+        self.current_velocity_publisher.publish(msg_velocity)
+
+        msg_distance = Float64()
+        msg_distance.data = (current_distance // self.wheel_radius) / 1000
+        self.current_distance_publisher.publish(msg_distance)
+
 
 def main(args=None):
     rclpy.init(args=args)

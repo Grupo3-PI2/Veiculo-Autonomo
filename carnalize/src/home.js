@@ -26,8 +26,6 @@ const HomePageView = ({ addNotification }) => {
   const [startFollowerService, setStartFollowerService] = useState(null);
   const [stopFollowerService, setStopFollowerService] = useState(null);
 
-  const socketRef = useRef(null);
-
   useEffect(() => {
     var ros = new ROSLIB.Ros({
       url: 'ws://localhost:9090'
@@ -55,6 +53,20 @@ const HomePageView = ({ addNotification }) => {
       ros: ros,
       name: '/object_removed',
       messageType: 'sensor_msgs/Range'
+    });
+
+    var currentVelocityListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/current_velocity',
+      messageType: 'std_msgs/Float64',
+      throttle_rate: 1000, // interval between messages in milliseconds
+    });
+
+    var currentDistanceListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/current_distance',
+      messageType: 'std_msgs/Float64',
+      throttle_rate: 1000, // interval between messages in milliseconds
     });
 
     objectDetectedListener.subscribe(function(message) {
@@ -88,6 +100,32 @@ const HomePageView = ({ addNotification }) => {
       setObjectFound(false);
     });
 
+    currentVelocityListener.subscribe(function(message) {
+      console.log('Speed:', message.data);
+      let velocity = message.data;
+
+      // transform m/s to km/h
+      velocity = velocity * 3.6;
+
+      // show only the last 3 digits
+      velocity = velocity.toFixed(3);
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        speed: velocity
+      }));
+    });
+
+    currentDistanceListener.subscribe(function(message) {
+      console.log('Distance:', message.data);
+      let distance = message.data;
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        distance: distance
+      }));
+    });
+
     setStartFollowerService(new ROSLIB.Service({
       ros: ros,
       name: '/start_follower',
@@ -99,6 +137,7 @@ const HomePageView = ({ addNotification }) => {
       name: '/stop_follower',
       serviceType: 'std_srvs/Empty'
     }))
+    
     // socketRef.current.on('carProgress', (progress) => {
     //   console.log('Car progress:', progress);
     //   setCarProgress(progress);
@@ -161,7 +200,7 @@ const HomePageView = ({ addNotification }) => {
 
   const handleResetCar = () => {
     setShowFirstPage(true);
-    socketRef.current.emit('resetCar');
+    // socketRef.current.emit('resetCar');
   };
 
   const getProgress = (carDistance) => {
@@ -240,6 +279,10 @@ const HomePageView = ({ addNotification }) => {
 
       {!objectFound && !showFirstPage && (
         <View style={styles.container}>
+          <View style={styles.container}>
+            <img id="image" src="http://localhost:8080/stream?topic=/camera/image_raw" alt="Camera Image" style={{width: "100%", height: "100%", objectFit: "contain"}}>
+            </img>
+          </View>
           <View style={styles.container}>
             <View id="filledBar" style={styles.bar}>
               <View

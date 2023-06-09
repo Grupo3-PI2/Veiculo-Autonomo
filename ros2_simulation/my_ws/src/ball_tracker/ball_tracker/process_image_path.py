@@ -96,8 +96,8 @@ def find_path(image, tuning_params):
     tuning_image = cv2.drawKeypoints(tuning_image, keypoints, np.array([]), line_color, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     # tuning_image = draw_window(tuning_image, search_window)
     # cv2.rectangle(image,(x_min_px,y_min_px),(x_max_px,y_max_px),color,line)
-    tuning_image = draw_window2(tuning_image, search_window_px)
 
+    tuning_image = draw_window2(tuning_image, search_window_px)
 
     keypoints_normalised = [normalise_keypoint(working_image, k) for k in keypoints]
 

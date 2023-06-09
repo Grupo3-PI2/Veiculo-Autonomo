@@ -32,7 +32,7 @@ class DetectBall(Node):
         self.image_sub = self.create_subscription(Image,"/image_in",self.callback,rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value)
         self.image_out_pub = self.create_publisher(Image, "/image_out_ball", 1)
         self.image_tuning_pub = self.create_publisher(Image, "/image_tuning_ball", 1)
-        self.image_cvlib_pub = self.create_publisher(Image, "/image_cvlib", 1)
+        self.image_cvlib_pub = self.create_publisher(Image, "/image_cvlib", 2)
         self.ball_pub  = self.create_publisher(Point,"/detected_ball",1)
 
         self.declare_parameter('tuning_mode', False)
@@ -99,8 +99,8 @@ class DetectBall(Node):
 
             keypoints_norm, out_image, tuning_image = proc.find_circles(cv_image, self.tuning_params)
 
-            # bbox, label, conf = cv.detect_common_objects(cv_image)
-            # cvlib_image = draw_bbox(cv_image, bbox, label, conf)
+            bbox, label, conf = cv.detect_common_objects(cv_image)
+            cvlib_image = draw_bbox(cv_image, bbox, label, conf)
 
             img_to_pub = self.bridge.cv2_to_imgmsg(out_image, "bgr8")
             img_to_pub.header = data.header
@@ -110,9 +110,9 @@ class DetectBall(Node):
             img_to_pub.header = data.header
             self.image_tuning_pub.publish(img_to_pub)
 
-            # img_to_pub = self.bridge.cv2_to_imgmsg(cvlib_image, "bgr8")
-            # img_to_pub.header = data.header
-            # self.image_cvlib_pub.publish(img_to_pub)
+            img_to_pub = self.bridge.cv2_to_imgmsg(cvlib_image, "bgr8")
+            img_to_pub.header = data.header
+            self.image_cvlib_pub.publish(img_to_pub)
 
             point_out = Point()
 
