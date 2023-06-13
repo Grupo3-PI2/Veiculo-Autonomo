@@ -5,14 +5,20 @@ import time  # bliblioteca com recursos de manejar o tempo, pausar os script e e
 GPIO.setmode(GPIO.BCM)  
  
 #set GPIO Pins
-GPIO_TRIGGER = 18
-GPIO_ECHO = 24
- 
+SD1_GPIO_TRIGGER = 23
+SD1_GPIO_ECHO = 24
+SD2_GPIO_TRIGGER = 25
+SD2_GPIO_ECHO = 26
+
 #set GPIO direction (IN / OUT)
-GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
-GPIO.setup(GPIO_ECHO, GPIO.IN)
+GPIO.setup(SD1_GPIO_TRIGGER, GPIO.OUT)#trigger do sd1
+GPIO.setup(SD1_GPIO_ECHO, GPIO.IN)#echo do sd1
+
+GPIO.setup(SD2_GPIO_TRIGGER, GPIO.OUT)#triger do sd2
+GPIO.setup(SD2_GPIO_ECHO, GPIO.IN)#echo sd2
+
  
-def distance():
+def distance(GPIO_TRIGGER,GPIO_ECHO):
     # set Trigger to HIGH
     GPIO.output(GPIO_TRIGGER, True)
  
@@ -42,10 +48,13 @@ def distance():
 if __name__ == '__main__':
     try:
         while True:
-            dist = distance()
-            print ("Measured Distance = %.1f cm" % dist)
-            time.sleep(1)
- 
+            dist = distance(SD1_GPIO_TRIGGER,SD1_GPIO_ECHO)
+            print ("Measured Distance de SD1 = %.1f cm" % dist)
+            time.sleep(0.001)
+            dist = distance(SD2_GPIO_TRIGGER,SD2_GPIO_ECHO)
+            print ("Measured Distance de SD2 = %.1f cm" % dist)
+            time.sleep(0.001)
+
         # Reset by pressing CTRL + C
     except KeyboardInterrupt:
         print("Measurement stopped by User")
