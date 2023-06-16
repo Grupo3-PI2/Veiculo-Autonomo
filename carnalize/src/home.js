@@ -11,7 +11,7 @@ import ROSLIB from 'roslib';
 
 import styles from "./styles";
 import { Alert } from "./components/alert";
-  
+
 const HomePageView = ({ addNotification }) => {
   const [objectFound, setObjectFound] = useState(false);
   const [showFirstPage, setShowFirstPage] = useState(true);
@@ -25,119 +25,12 @@ const HomePageView = ({ addNotification }) => {
   });
   const [startFollowerService, setStartFollowerService] = useState(null);
   const [stopFollowerService, setStopFollowerService] = useState(null);
+  const [resetProgressService, setResetProgressService] = useState(null);
+  const [ros2ConnectionError, setRos2ConnectionError] = useState(false);
 
   useEffect(() => {
-    var ros = new ROSLIB.Ros({
-      url: 'ws://localhost:9090'
-    });
+    connectToROS();
 
-    ros.on('connection', function() {
-      console.log('Connected to websocket server.');
-    });
-
-    ros.on('error', function(error) {
-      console.log('Error connecting to websocket server: ', error);
-    });
-
-    ros.on('close', function() {
-      console.log('Connection to websocket server closed.');
-    });
-
-    var objectDetectedListener = new ROSLIB.Topic({
-      ros: ros,
-      name: '/object_detected',
-      messageType: 'sensor_msgs/Range'
-    });
-
-    var objectRemovedListener = new ROSLIB.Topic({
-      ros: ros,
-      name: '/object_removed',
-      messageType: 'sensor_msgs/Range'
-    });
-
-    var currentVelocityListener = new ROSLIB.Topic({
-      ros: ros,
-      name: '/current_velocity',
-      messageType: 'std_msgs/Float64',
-      throttle_rate: 1000, // interval between messages in milliseconds
-    });
-
-    var currentDistanceListener = new ROSLIB.Topic({
-      ros: ros,
-      name: '/current_distance',
-      messageType: 'std_msgs/Float64',
-      throttle_rate: 1000, // interval between messages in milliseconds
-    });
-
-    objectDetectedListener.subscribe(function(message) {
-      console.log('Distance:', message.range);
-      let distance = message.range;
-
-      setCarProgress(prevState => ({
-        ...prevState,
-        isRunning: false,
-        speed: 0
-      }));
-
-      if (!objectFound) {
-        setObjectFound(true);
-        addNotification(
-          {
-            icon: <Ionicons name="warning-outline" color="black" size={20} />,
-            text: "Um objeto no caminho foi detectado",
-          }
-        );
-      }
-    });
-
-    objectRemovedListener.subscribe(function(message) {
-      setCarProgress(prevState => ({
-        ...prevState,
-        isRunning: true,
-        speed: 0
-      }));
-
-      setObjectFound(false);
-    });
-
-    currentVelocityListener.subscribe(function(message) {
-      console.log('Speed:', message.data);
-      let velocity = message.data;
-
-      // transform m/s to km/h
-      velocity = velocity * 3.6;
-
-      // show only the last 3 digits
-      velocity = velocity.toFixed(3);
-
-      setCarProgress(prevState => ({
-        ...prevState,
-        speed: velocity
-      }));
-    });
-
-    currentDistanceListener.subscribe(function(message) {
-      console.log('Distance:', message.data);
-      let distance = message.data;
-
-      setCarProgress(prevState => ({
-        ...prevState,
-        distance: distance
-      }));
-    });
-
-    setStartFollowerService(new ROSLIB.Service({
-      ros: ros,
-      name: '/start_follower',
-      serviceType: 'std_srvs/Empty'
-    }))
-
-    setStopFollowerService(new ROSLIB.Service({
-      ros: ros,
-      name: '/stop_follower',
-      serviceType: 'std_srvs/Empty'
-    }))
-    
     // socketRef.current.on('carProgress', (progress) => {
     //   console.log('Car progress:', progress);
     //   setCarProgress(progress);
@@ -170,36 +63,181 @@ const HomePageView = ({ addNotification }) => {
     // };
   }, []);
 
-  const handleStartCar = () => {
-    if (objectFound) {
-      return;
-    }
-
-    var request = new ROSLIB.ServiceRequest({});
-    startFollowerService.callService(request, function(result) {
-      console.log('Start Service response:', result);
+  const connectToROS = () => {
+    var ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090'
     });
 
-    setCarProgress(prevState => ({
-      ...prevState,
-      isRunning: true
-    }));
+    ros.on('connection', function () {
+      console.log('Connected to ROS2 server.');
+      setErrorMessage("");
+      setRos2ConnectionError(false);
+    });
+
+    ros.on('error', function (error) {
+      console.log('Error connecting to ROS2 server:', error);
+      setErrorMessage("Error connecting to ROS2 server");
+      setRos2ConnectionError(true);
+    });
+
+    ros.on('close', function () {
+      console.log('Connection to ROS2 server closed.');
+      setErrorMessage("Error connecting to ROS2 server");
+      setRos2ConnectionError(true);
+    });
+
+    var objectDetectedListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/object_detected',
+      messageType: 'sensor_msgs/Range'
+    });
+
+    var objectRemovedListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/object_removed',
+      messageType: 'sensor_msgs/Range'
+    });
+
+    var currentVelocityListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/current_velocity',
+      messageType: 'std_msgs/Float64',
+      throttle_rate: 1000, // interval between messages in milliseconds
+    });
+
+    var currentDistanceListener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/current_distance',
+      messageType: 'std_msgs/Float64',
+      throttle_rate: 1000, // interval between messages in milliseconds
+    });
+
+    objectDetectedListener.subscribe(function (message) {
+      console.log('Distance:', message.range);
+      let distance = message.range;
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        isRunning: false,
+        speed: 0
+      }));
+
+      if (!objectFound) {
+        setObjectFound(true);
+        addNotification(
+          {
+            icon: <Ionicons name="warning-outline" color="black" size={20} />,
+            text: "Um objeto no caminho foi detectado",
+          }
+        );
+      }
+    });
+
+    objectRemovedListener.subscribe(function (message) {
+      setCarProgress(prevState => ({
+        ...prevState,
+        isRunning: true,
+        speed: 0
+      }));
+
+      setObjectFound(false);
+    });
+
+    currentVelocityListener.subscribe(function (message) {
+      let velocity = message.data;
+
+      // transform m/s to km/h
+      velocity = velocity * 3.6;
+
+      // show only the last 3 digits
+      velocity = velocity.toFixed(3);
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        speed: velocity
+      }));
+    });
+
+    currentDistanceListener.subscribe(function (message) {
+      let distance = message.data;
+
+      setCarProgress(prevState => ({
+        ...prevState,
+        distance: distance
+      }));
+    });
+
+    setStartFollowerService(new ROSLIB.Service({
+      ros: ros,
+      name: '/start_follower',
+      serviceType: 'std_srvs/Empty'
+    }))
+
+    setStopFollowerService(new ROSLIB.Service({
+      ros: ros,
+      name: '/stop_follower',
+      serviceType: 'std_srvs/Empty'
+    }))
+
+    setResetProgressService(new ROSLIB.Service({
+      ros: ros,
+      name: '/reset_progress',
+      serviceType: 'std_srvs/Empty'
+    }))
   };
+
+  function handleStartCar() {
+    return new Promise((resolve, reject) => {
+      console.log('Start car', startFollowerService);
+      var request = new ROSLIB.ServiceRequest({});
+
+      startFollowerService.callService(
+        request,
+        response => {
+          setCarProgress(prevState => ({
+            ...prevState,
+            isRunning: true
+          }));
+          resolve(response);
+        },
+        err => {
+          console.error("err:", err);
+          reject(err);
+        }
+      );
+    });
+  }
 
   const handleStopCar = () => {
     var request = new ROSLIB.ServiceRequest({});
-    stopFollowerService.callService(request, function(result) {
+    stopFollowerService.callService(request, function (result) {
       console.log('Stop Service response:', result);
-    });
 
-    setCarProgress(prevState => ({
-      ...prevState,
-      isRunning: false
-    }));
+      setCarProgress(prevState => ({
+        ...prevState,
+        isRunning: false
+      }));
+    });
   };
 
   const handleResetCar = () => {
     setShowFirstPage(true);
+
+    connectToROS();
+    var request = new ROSLIB.ServiceRequest({});
+    resetProgressService.callService(request, function (result) {
+      console.log('Reset Service response:', result);
+
+      // reset all values
+      setCarProgress({
+        isRunning: false,
+        speed: 0,
+        distance: 0
+      });
+
+      setObjectFound(false);
+    });
+    
     // socketRef.current.emit('resetCar');
   };
 
@@ -222,7 +260,7 @@ const HomePageView = ({ addNotification }) => {
   const handleRouteDistanceChange = (text) => {
     let cleanedText = text.replace(/[^0-9]/g, '');
     let number = parseInt(cleanedText, 10);
-  
+
     if (isNaN(number)) {
       number = 0;
     }
@@ -233,7 +271,7 @@ const HomePageView = ({ addNotification }) => {
     } else {
       setErrorMessage('');
     }
-  
+
     setRouteDistance(number);
   };
 
@@ -246,8 +284,16 @@ const HomePageView = ({ addNotification }) => {
       </View>
       <View style={styles.topBar} />
 
+      {ros2ConnectionError ? (
+        <View style={[styles.container, styles.infoContainer]}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={connectToROS}>
+            <Text style={styles.btnText}>Tentar novamente</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
-      {showFirstPage ? (
+      {showFirstPage && !ros2ConnectionError ? (
         <View style={[styles.container]}>
           <View style={[styles.container, styles.infoContainer]}>
             <Text style={styles.infoText}>
@@ -273,14 +319,14 @@ const HomePageView = ({ addNotification }) => {
         </View>
       ) : null}
 
-      {objectFound && !showFirstPage ? (
+      {objectFound && !showFirstPage && !ros2ConnectionError ? (
         <Alert />
       ) : null}
 
-      {!objectFound && !showFirstPage && (
+      {!objectFound && !showFirstPage && !ros2ConnectionError && (
         <View style={styles.container}>
           <View style={styles.container}>
-            <img id="image" src="http://localhost:8080/stream?topic=/camera/image_raw" alt="Camera Image" style={{width: "100%", height: "100%", objectFit: "contain"}}>
+            <img id="image" src="http://localhost:8080/stream?topic=/camera/image_raw" alt="Camera Image" style={{ width: "100%", height: "100%", objectFit: "contain" }}>
             </img>
           </View>
           <View style={styles.container}>
@@ -291,7 +337,7 @@ const HomePageView = ({ addNotification }) => {
               >
                 <View style={styles.barIcons}>
                   <View style={styles.barInfo}>
-                    <Text style={styles.barInfoText}>{ getProgress(carProgress.distance) }%</Text>
+                    <Text style={styles.barInfoText}>{getProgress(carProgress.distance)}%</Text>
                   </View>
                   <View style={styles.barDot} />
                   <Ionicons name="car-outline" color="black" size={25} />
@@ -323,7 +369,7 @@ const HomePageView = ({ addNotification }) => {
             </View>
           </View>
 
-          {!showFirstPage ? (
+          {!showFirstPage && !ros2ConnectionError ? (
             <View style={[styles.container, { flex: 0.5 }]}>
               {carProgress.isRunning ? (
                 <TouchableOpacity style={styles.btn} onPress={handleStopCar}>

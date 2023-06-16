@@ -155,6 +155,25 @@ const styles = StyleSheet.create({
       margin: "1rem",
       backgroundColor: "#FF6666",
     },
+    errorText: {
+      fontSize: 18,
+      color: '#ff0000',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginTop: 20,
+      marginBottom: 10,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 10,
+      borderWidth: 2,
+      shadowColor: '#000000',
+      shadowOpacity: 0.2,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      elevation: 3,
+    },
   });
 
   export default styles;

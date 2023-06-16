@@ -158,49 +158,6 @@
           </material>
         </visual>
         <visual name='base_link_fixed_joint_lump__camera_link_visual_1'>
-          <pose>0.05 0 0.171 0 0.18 0</pose>
-          <geometry>
-            <box>
-              <size>0.01 0.03 0.03</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <name>Gazebo/Black</name>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-            </script>
-          </material>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__camera_link_visual_2'>
-          <pose>0.041049 0 0.121808 0 0.18 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.1</length>
-              <radius>0.002</radius>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <name>Gazebo/Black</name>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-            </script>
-          </material>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__caster_wheel_visual_3'>
-          <pose>-0.151 0 -0.023 0 -0 0</pose>
-          <geometry>
-            <sphere>
-              <radius>0.01</radius>
-            </sphere>
-          </geometry>
-          <material>
-            <script>
-              <name>Gazebo/White</name>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-            </script>
-          </material>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__distance_sensor_link_visual_4'>
           <pose>0.109 0 0.07 0 -0 0</pose>
           <geometry>
             <box>
@@ -214,7 +171,35 @@
             </script>
           </material>
         </visual>
-        <visual name='base_link_fixed_joint_lump__face_link_visual_5'>
+        <visual name='base_link_fixed_joint_lump__caster_wheel_visual_2'>
+          <pose>-0.151 0 -0.023 0 -0 0</pose>
+          <geometry>
+            <sphere>
+              <radius>0.01</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/White</name>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+            </script>
+          </material>
+        </visual>
+        <visual name='base_link_fixed_joint_lump__distance_sensor_link_visual_3'>
+          <pose>0.109 0.05 0.07 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>0.01 0.03 0.03</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Black</name>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+            </script>
+          </material>
+        </visual>
+        <visual name='base_link_fixed_joint_lump__face_link_visual_4'>
           <pose>0.109 0.05 0.069 3.14159 1.57079 3.14159</pose>
           <geometry>
             <cylinder>
@@ -229,7 +214,7 @@
             </script>
           </material>
         </visual>
-        <visual name='base_link_fixed_joint_lump__face_link_visual_6'>
+        <visual name='base_link_fixed_joint_lump__face_link_visual_5'>
           <pose>0.109 -0.05 0.069 3.14159 1.57079 3.14159</pose>
           <geometry>
             <cylinder>
@@ -244,7 +229,7 @@
             </script>
           </material>
         </visual>
-        <visual name='base_link_fixed_joint_lump__face_link_visual_7'>
+        <visual name='base_link_fixed_joint_lump__face_link_visual_6'>
           <pose>0.098 0 0.059 0 1.5 0</pose>
           <geometry>
             <cylinder>
@@ -261,7 +246,7 @@
         </visual>
         <sensor name='camera' type='camera'>
           <visualize>1</visualize>
-          <update_rate>10</update_rate>
+          <update_rate>20</update_rate>
           <camera>
             <horizontal_fov>1.089</horizontal_fov>
             <image>
@@ -277,7 +262,7 @@
           <plugin name='camera_controller' filename='libgazebo_ros_camera.so'>
             <frame_name>camera_link_optical</frame_name>
           </plugin>
-          <pose>0.05 0 0.171 0 0.18 0</pose>
+          <pose>0.109 0 0.07 0 -0 0</pose>
         </sensor>
         <sensor name='ultrasonic_1' type='ray'>
           <always_on>1</always_on>
@@ -313,7 +298,7 @@
             <fov>0.5</fov>
             <radiation>ultrasound</radiation>
           </plugin>
-          <pose>0.109 0 0.07 0 -0 0</pose>
+          <pose>0.109 0.05 0.07 0 -0 0</pose>
         </sensor>
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
@@ -466,111 +451,6 @@
       </plugin>
       <pose>0 0 0 0 -0 0</pose>
     </model>
-    <model name='Stop_Sign_small_size'>
-      <link name='link'>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose>0 0 0 0 -0 0</pose>
-        <gravity>1</gravity>
-        <inertial>
-          <mass>1</mass>
-          <pose>0 0 0 0 -0 0</pose>
-          <inertia>
-            <ixx>1</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>1</iyy>
-            <iyz>0</iyz>
-            <izz>1</izz>
-          </inertia>
-        </inertial>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://stop_sign/meshes/stop_sign.dae</uri>
-              <scale>0.2 0.2 0.2</scale>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>model://stop_sign/materials/scripts</uri>
-              <uri>model://stop_sign/materials/textures</uri>
-              <name>StopSign/Diffuse</name>
-            </script>
-            <shader type='pixel'>
-              <normal_map>__default__</normal_map>
-            </shader>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <specular>0 0 0 1</specular>
-            <emissive>0 0 0 1</emissive>
-          </material>
-          <pose>0 0 0 0 -0 0</pose>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/home/paulo/.gazebo/models/stop_sign/meshes/stop_sign.dae</uri>
-              <scale>0.2 0.2 0.2</scale>
-            </mesh>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-                <max_vel>0.01</max_vel>
-                <min_depth>0</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose>1.7703 -0.339487 0 0 -0 0</pose>
-    </model>
     <model name='track2'>
       <static>1</static>
       <link name='link'>
@@ -594,9 +474,9 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.922718 2.29586 0 0 -0 0</pose>
+      <pose>-0.223035 2.45436 0 0 -0 0</pose>
     </model>
-    <model name='Stop_Sign_small_size_0'>
+    <model name='Stop_Sign'>
       <link name='link'>
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
@@ -619,7 +499,7 @@
           <geometry>
             <mesh>
               <uri>model://stop_sign/meshes/stop_sign.dae</uri>
-              <scale>0.2 0.2 0.2</scale>
+              <scale>0.3 0.3 0.3</scale>
             </mesh>
           </geometry>
           <material>
@@ -647,7 +527,7 @@
           <geometry>
             <mesh>
               <uri>/home/paulo/.gazebo/models/stop_sign/meshes/stop_sign.dae</uri>
-              <scale>0.2 0.2 0.2</scale>
+              <scale>0.3 0.3 0.3</scale>
             </mesh>
           </geometry>
           <surface>
@@ -699,10 +579,115 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose>3.67252 3.78972 0 0 -0 0</pose>
+      <pose>2.26253 3.98463 0 0 -0 0</pose>
+    </model>
+    <model name='Stop_Sign_0'>
+      <link name='link'>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+        <pose>0 0 0 0 -0 0</pose>
+        <gravity>1</gravity>
+        <inertial>
+          <mass>1</mass>
+          <pose>0 0 0 0 -0 0</pose>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://stop_sign/meshes/stop_sign.dae</uri>
+              <scale>0.3 0.3 0.3</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://stop_sign/materials/scripts</uri>
+              <uri>model://stop_sign/materials/textures</uri>
+              <name>StopSign/Diffuse</name>
+            </script>
+            <shader type='pixel'>
+              <normal_map>__default__</normal_map>
+            </shader>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0 0 0 1</specular>
+            <emissive>0 0 0 1</emissive>
+          </material>
+          <pose>0 0 0 0 -0 0</pose>
+          <transparency>0</transparency>
+          <cast_shadows>1</cast_shadows>
+        </visual>
+        <collision name='collision'>
+          <laser_retro>0</laser_retro>
+          <max_contacts>10</max_contacts>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/home/paulo/.gazebo/models/stop_sign/meshes/stop_sign.dae</uri>
+              <scale>0.3 0.3 0.3</scale>
+            </mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+                <fdir1>0 0 0</fdir1>
+                <slip1>0</slip1>
+                <slip2>0</slip2>
+              </ode>
+              <torsional>
+                <coefficient>1</coefficient>
+                <patch_radius>0</patch_radius>
+                <surface_radius>0</surface_radius>
+                <use_patch_radius>1</use_patch_radius>
+                <ode>
+                  <slip>0</slip>
+                </ode>
+              </torsional>
+            </friction>
+            <bounce>
+              <restitution_coefficient>0</restitution_coefficient>
+              <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+              <collide_without_contact>0</collide_without_contact>
+              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+              <collide_bitmask>1</collide_bitmask>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0</min_depth>
+              </ode>
+              <bullet>
+                <split_impulse>1</split_impulse>
+                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+              </bullet>
+            </contact>
+          </surface>
+        </collision>
+      </link>
+      <static>1</static>
+      <allow_auto_disable>1</allow_auto_disable>
+      <pose>-2.17264 5.0748 0 0 -0 0</pose>
     </model>
     <model name='unit_box'>
-      <pose>0.600004 0.943781 0.5 0 -0 0</pose>
+      <pose>-0.240805 3.27048 0.5 0 -0 0</pose>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -755,25 +740,25 @@
       </link>
     </model>
     <state world_name='default'>
-      <sim_time>449 376000000</sim_time>
-      <real_time>452 375026728</real_time>
-      <wall_time>1686302553 435666367</wall_time>
-      <iterations>449376</iterations>
-      <model name='Stop_Sign_small_size'>
-        <pose>2.2232 -0.415563 0 0 0 -1.49454</pose>
+      <sim_time>721 905000000</sim_time>
+      <real_time>728 556296460</real_time>
+      <wall_time>1686920660 609277370</wall_time>
+      <iterations>721905</iterations>
+      <model name='Stop_Sign'>
+        <pose>2.26253 3.98463 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>2.2232 -0.415563 0 0 0 -1.49454</pose>
+          <pose>2.26253 3.98463 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='Stop_Sign_small_size_0'>
-        <pose>3.58883 3.78972 0 0 -0 0</pose>
+      <model name='Stop_Sign_0'>
+        <pose>-2.18691 5.22077 0 0 -0 1.66826</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>3.58883 3.78972 0 0 -0 0</pose>
+          <pose>-2.18691 5.22077 0 0 -0 1.66826</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -790,45 +775,45 @@
         </link>
       </model>
       <model name='my_bot'>
-        <pose>-1.76712 3.35423 0.032497 -2.1e-05 2.2e-05 -1.51945</pose>
+        <pose>-2.89019 3.28352 0.032497 2e-05 2.2e-05 -1.52851</pose>
         <scale>1 1 1</scale>
         <link name='base_link'>
-          <pose>-1.76712 3.35423 0.032497 -2.1e-05 2.2e-05 -1.51945</pose>
-          <velocity>0.024615 -0.498738 3e-06 -0.002108 0.040642 0.033496</velocity>
-          <acceleration>2.31828 0.134061 0.003431 1.34207 1.1474 -0.86213</acceleration>
-          <wrench>1.18232 0.068371 0.00175 0 -0 0</wrench>
+          <pose>-2.89019 3.28352 0.032497 2e-05 2.2e-05 -1.52851</pose>
+          <velocity>0.00097 0.00043 1e-06 0.001713 -0.040632 -0.003304</velocity>
+          <acceleration>-2.3049 -0.098601 0.001137 -2.22943 -1.12049 0.914576</acceleration>
+          <wrench>-1.1755 -0.050286 0.00058 0 -0 0</wrench>
         </link>
         <link name='left_wheel'>
-          <pose>-1.61882 3.36185 0.032494 1.57103 0.21427 1.6222</pose>
-          <velocity>0.024886 -0.493766 -0.006093 2.43939 0.759568 0.02986</velocity>
-          <acceleration>-1.47557 0.888404 -12.135 1.64256 -0.943081 1.58778</acceleration>
-          <wrench>-0.073778 0.04442 -0.606748 0 -0 0</wrench>
+          <pose>-2.74183 3.2898 0.0325 1.57132 -1.08015 1.61262</pose>
+          <velocity>0.000458 -6.3e-05 0.006094 0.001812 0.012071 -0.003324</velocity>
+          <acceleration>1.47514 -0.885394 12.1338 -0.534583 0.324606 -1.37987</acceleration>
+          <wrench>0.073757 -0.04427 0.606692 0 -0 0</wrench>
         </link>
         <link name='right_wheel'>
-          <pose>-1.91542 3.34661 0.0325 -1.57147 -1.18873 1.62277</pose>
-          <velocity>0.025392 -0.503675 0.006117 2.6994 0.771428 0.037127</velocity>
-          <acceleration>-1.38052 -1.02796 12.1634 -0.257683 0.335341 1.50691</acceleration>
-          <wrench>-0.069026 -0.051398 0.608169 0 -0 0</wrench>
+          <pose>-3.03856 3.27725 0.032494 1.5727 1.4464 -1.52662</pose>
+          <velocity>0.000433 0.000892 -0.006108 -0.000511 0.01227 -0.003281</velocity>
+          <acceleration>1.40992 1.01847 -12.1462 -1.93965 0.086838 -1.30973</acceleration>
+          <wrench>0.070496 0.050923 -0.607312 0 -0 0</wrench>
         </link>
       </model>
       <model name='track2'>
-        <pose>0.922718 2.29586 0 0 -0 0</pose>
+        <pose>-0.223035 2.45436 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>0.922718 2.29586 0 0 -0 0</pose>
+          <pose>-0.223035 2.45436 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='unit_box'>
-        <pose>1.15453 2.95067 0.4995 -0 -0 -0</pose>
+        <pose>-0.240805 3.27048 0.4995 -0 -0 -0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>1.15453 2.95067 0.4995 -0 -0 -0</pose>
+          <pose>-0.240805 3.27048 0.4995 -0 -0 -0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 -0 0 0 -0 0</acceleration>
-          <wrench>0 -0 0 0 -0 0</wrench>
+          <acceleration>-0 0 0 0 -0 0</acceleration>
+          <wrench>-0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <light name='sun'>
@@ -837,7 +822,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>-7.47715 5.91708 5.50436 0 0.559641 -0.432613</pose>
+        <pose>-4.47498 -1.92342 4.05102 0 0.563643 0.798572</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

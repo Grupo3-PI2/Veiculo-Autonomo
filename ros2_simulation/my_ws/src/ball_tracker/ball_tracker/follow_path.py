@@ -25,7 +25,6 @@ from std_srvs.srv import Empty
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 
-
 from sensor_msgs.msg import JointState
 
 class FollowPath(Node):
@@ -55,6 +54,7 @@ class FollowPath(Node):
             20)
         self.start_service = self.create_service(Empty, 'start_follower', self.start_follower_callback)
         self.stop_service = self.create_service(Empty, 'stop_follower', self.stop_follower_callback)
+        self.reset_progress = self.create_service(Empty, 'reset_progress', self.reset_progress_callback)
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         self.object_detected_publisher = self.create_publisher(Range, '/object_detected', 1)
         self.object_removed_publisher = self.create_publisher(Range, '/object_removed', 1)
@@ -179,11 +179,15 @@ class FollowPath(Node):
         self.should_move = False
         return response
     
+    def reset_progress_callback(self, request, response):
+        print("Resetting progress")
+        self.start_distance = 0.0
+        self.should_move = False
+        return response
+    
     def joint_states_callback(self, data):
         current_velocity = (data.velocity[0] + data.velocity[1])/2
         current_velocity = current_velocity * self.wheel_radius
-
-
 
         current_distance = (data.position[0] + data.position[1])/2
         current_distance = current_distance - self.start_distance
