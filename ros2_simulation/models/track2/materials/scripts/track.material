@@ -1,0 +1,16 @@
+material Track2/Image
+        {
+          receive_shadows on
+          technique
+          {
+            pass
+            {
+
+              texture_unit
+              {
+                texture Track2.png
+              }
+            }
+          }
+        }
+
