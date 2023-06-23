@@ -21,7 +21,7 @@ import math
 class DetectBall3d(Node):
 
     def __init__(self):
-        super().__init__('detect_ball_3d')
+        super().__init__('detect_stop_sign_3d')
 
         self.get_logger().info('Detecting in 3D')
 
@@ -87,9 +87,9 @@ class DetectBall3d(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    detect_ball_3d = DetectBall3d()
-    rclpy.spin(detect_ball_3d)
-    detect_ball_3d.destroy_node()
+    detect_stop_sign_3d = DetectBall3d()
+    rclpy.spin(detect_stop_sign_3d)
+    detect_stop_sign_3d.destroy_node()
     rclpy.shutdown()
 
 

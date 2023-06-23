@@ -64,7 +64,7 @@ def generate_launch_description():
 
     detect_node = Node(
             package='ball_tracker',
-            executable='detect_ball',
+            executable='detect_stop_sign',
             parameters=[params_file, {'tuning_mode': tune_detection}],
             remappings=[('/image_in',image_topic)],
             condition=UnlessCondition(follow_only)
@@ -72,7 +72,7 @@ def generate_launch_description():
 
     detect_3d_node = Node(
             package='ball_tracker',
-            executable='detect_ball_3d',
+            executable='detect_stop_sign_3d',
             parameters=[params_file],
             condition=IfCondition(enable_3d_tracker)
          )

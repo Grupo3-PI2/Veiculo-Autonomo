@@ -24,7 +24,7 @@ import ball_tracker.process_image_path as proc
 class DetectPath(Node):
 
     def __init__(self):
-        super().__init__('detect_ball')
+        super().__init__('detect_stop_sign')
 
         self.get_logger().info('Looking for the path...')
         self.image_sub = self.create_subscription(Image,"/image_in",self.callback,rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value)

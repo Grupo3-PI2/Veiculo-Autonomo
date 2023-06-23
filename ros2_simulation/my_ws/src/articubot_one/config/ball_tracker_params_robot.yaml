@@ -1,4 +1,4 @@
-detect_ball:
+detect_stop_sign:
   ros__parameters:
     # tuning_mode: false # Could set this here but leave it off so it can be easily set by the launch script
     x_min: 0
@@ -14,7 +14,7 @@ detect_ball:
     sz_min: 0
     sz_max: 25
 
-detect_ball_3d:
+detect_stop_sign_3d:
   ros__parameters:
     h_fov: 1.089
     ball_radius: 0.033
