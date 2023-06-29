@@ -1,0 +1,7 @@
+instalação bibliotecas amplificador HX711
+clone esse repositório: 
+https://github.com/tatobari/hx711py
+entre nele e escreva:
+> python setup.py install
+
+pronto, a biblioteca está instalada
