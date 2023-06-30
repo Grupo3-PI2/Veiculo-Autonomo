@@ -26,34 +26,13 @@ class DCMotor {
       digitalWrite(pin2, LOW);
       }
    };
-   DCMotor Motor1, Motor2; // Criação de dois objetos motores, já que usaremos dois motores, e eles já estão prontos para receber os comandos já configurados acima. 
-  int pwm = 255;
+   DCMotor Motor2; // Criação de dois objetos motores, já que usaremos dois motores, e eles já estão prontos para receber os comandos já configurados acima. 
 void setup() {
-  Serial.begin(9600);
-  Motor1.Pinout(1,2); // Seleção dos pinos que cada motor usará, como descrito na classe.
   Motor2.Pinout(5,6); 
 }
 void loop() {
   Motor2.Speed(255);// A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
   Motor2.Backward();
   delay(7000);
-
-  //Motor1.Stop(); // Comando para o motor parar
-  //Motor2.Stop();
-  pwm = 255;
-  while (pwm > 75) 
-  {
-   pwm-=5;
-   Motor2.Speed(pwm);
-   Serial.println("PWM: ");
-   Serial.println(pwm);
-   delay(100);
-   if (pwm == 75)
-   {
-     Motor2.Stop();
-     delay (5000);
-   }
-  }
-  pwm = 255;
-  delay(1000);
+  Motor2.Stop();
 }
