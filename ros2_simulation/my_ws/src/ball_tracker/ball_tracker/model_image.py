@@ -1,6 +1,32 @@
+# Copyright 2023 Josh Newans
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+from duckduckgo_search import ddg_images
+from fastcore.all import *
+from fastdownload import download_url
+from fastai.vision.all import *
+from time import sleep
+
+from fastbook import *
+from fastai.vision.widgets import *
+
+import os
 import gradio as gr
 from fastai.vision.all import *
 import skimage 
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -8,9 +34,14 @@ from sensor_msgs.msg        import Image
 from geometry_msgs.msg      import Point
 from cv_bridge              import CvBridge, CvBridgeError
 import ball_tracker.process_image as proc
-import cv2
 
-learn = load_learner('model.pkl')
+# # import cvlib as cv
+import cv2
+# # from cvlib.object_detection import draw_bbox
+
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+# model_path = os.path.join(current_dir, 'model.pkl')
+learn = load_learner('./src/ball_tracker/ball_tracker/model.pkl')
 
 labels = learn.dls.vocab
 def predict(img):
@@ -18,10 +49,10 @@ def predict(img):
     pred,pred_idx,probs = learn.predict(img)
     return {labels[i]: float(probs[i]) for i in range(len(labels))}
 
-class DetectObject(Node):
+class DetectBall(Node):
 
     def __init__(self):
-        super().__init__('detect_object')
+        super().__init__('detect_ball')
 
         self.get_logger().info('Looking for the ball...')
         self.image_sub = self.create_subscription(Image,"/image_in",self.callback,rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value)
@@ -82,24 +113,24 @@ class DetectObject(Node):
         if(self.tuning_mode):
             proc.create_tuning_window(self.tuning_params)
 
-    def runPredict(self, data):
+    def runPredict(self, cv_image):
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            image_path = "./src/ball_tracker/ball_tracker/imagem_temporaria.jpg"
+            cv2.imwrite(image_path, cv_image)
+
+            result = predict(image_path)
+            print(result)
         except CvBridgeError as e:
             print(e)
-
-        result = predict(cv_image)
-        print(result)
-        
-        threading.Timer(2.0, self.runPredict).start()
-
+    
     def callback(self, data):
-        self.runPredict(self, data)
-
         try:
             if (self.tuning_mode):
                 self.tuning_params = proc.get_tuning_params()
 
+            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            self.runPredict(cv_image)
+            time.sleep(2)
             keypoints_norm, out_image, tuning_image = proc.find_circles(cv_image, self.tuning_params)
 
             # bbox, label, conf = cv.detect_common_objects(cv_image)
@@ -144,10 +175,11 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    detect_object = DetectObject()
+    detect_ball = DetectBall()
     while rclpy.ok():
-        rclpy.spin_once(detect_object)
+        rclpy.spin_once(detect_ball)
         proc.wait_on_gui()
 
-    detect_object.destroy_node()
+    detect_ball.destroy_node()
     rclpy.shutdown()
+

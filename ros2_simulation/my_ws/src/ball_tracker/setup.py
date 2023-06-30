@@ -23,8 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'detect_ball = ball_tracker.detect_ball:main',
-            'detect_ball_3d = ball_tracker.detect_ball_3d:main',
+            'detect_stop_sign = ball_tracker.detect_stop_sign:main',
+            'detect_stop_sign_3d = ball_tracker.detect_stop_sign_3d:main',
             'follow_path = ball_tracker.follow_path:main',
             'detect_path = ball_tracker.detect_path:main',
             'model_image = ball_tracker.model_image:main',

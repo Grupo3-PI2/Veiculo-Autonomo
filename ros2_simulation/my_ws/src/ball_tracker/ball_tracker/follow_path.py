@@ -41,10 +41,10 @@ class FollowPath(Node):
             '/ultrasonic_sensor_1/out',
             self.detected_object_callback,
             20)
-        self.subscription_ball = self.create_subscription(
+        self.subscription_stop_sign = self.create_subscription(
             Point,
-            '/detected_ball',
-            self.detected_ball_callback,
+            '/detected_stop_sign',
+            self.detected_stop_sign_callback,
             20)
         # listen to "/joint_states" topic to get the current velocity of the car
         self.subscription_joint_states = self.create_subscription(
@@ -154,7 +154,7 @@ class FollowPath(Node):
         self.center_x = msg.x
         self.center_y = msg.z
 
-    def detected_ball_callback(self, data : Point):
+    def detected_stop_sign_callback(self, data : Point):
         ang_size = data.z*self.h_fov
         self.ball_distance = self.ball_radius/(math.atan(ang_size/2))
 
