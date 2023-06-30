@@ -12,6 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from duckduckgo_search import ddg_images
+from fastcore.all import *
+from fastdownload import download_url
+from fastai.vision.all import *
+from time import sleep
+
+from fastbook import *
+from fastai.vision.widgets import *
+
+import os
+import gradio as gr
+from fastai.vision.all import *
+import skimage 
+import time
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg        import Image
@@ -19,9 +35,19 @@ from geometry_msgs.msg      import Point
 from cv_bridge              import CvBridge, CvBridgeError
 import ball_tracker.process_image as proc
 
-import cvlib as cv
+# # import cvlib as cv
 import cv2
-from cvlib.object_detection import draw_bbox
+# # from cvlib.object_detection import draw_bbox
+
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+# model_path = os.path.join(current_dir, 'model.pkl')
+learn = load_learner('./src/ball_tracker/ball_tracker/model.pkl')
+
+labels = learn.dls.vocab
+def predict(img):
+    img = PILImage.create(img)
+    pred,pred_idx,probs = learn.predict(img)
+    return {labels[i]: float(probs[i]) for i in range(len(labels))}
 
 class DetectBall(Node):
 
@@ -32,7 +58,7 @@ class DetectBall(Node):
         self.image_sub = self.create_subscription(Image,"/image_in",self.callback,rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value)
         self.image_out_pub = self.create_publisher(Image, "/image_out_ball", 1)
         self.image_tuning_pub = self.create_publisher(Image, "/image_tuning_ball", 1)
-        self.image_cvlib_pub = self.create_publisher(Image, "/image_cvlib", 2)
+        # # self.image_cvlib_pub = self.create_publisher(Image, "/image_cvlib", 2)
         self.ball_pub  = self.create_publisher(Point,"/detected_ball",1)
 
         self.declare_parameter('tuning_mode', False)
@@ -87,20 +113,28 @@ class DetectBall(Node):
         if(self.tuning_mode):
             proc.create_tuning_window(self.tuning_params)
 
-    def callback(self,data):
+    def runPredict(self, cv_image):
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            image_path = "./src/ball_tracker/ball_tracker/imagem_temporaria.jpg"
+            cv2.imwrite(image_path, cv_image)
+
+            result = predict(image_path)
+            print(result)
         except CvBridgeError as e:
             print(e)
-
+    
+    def callback(self, data):
         try:
             if (self.tuning_mode):
                 self.tuning_params = proc.get_tuning_params()
 
+            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            self.runPredict(cv_image)
+            time.sleep(2)
             keypoints_norm, out_image, tuning_image = proc.find_circles(cv_image, self.tuning_params)
 
-            bbox, label, conf = cv.detect_common_objects(cv_image)
-            cvlib_image = draw_bbox(cv_image, bbox, label, conf)
+            # bbox, label, conf = cv.detect_common_objects(cv_image)
+            # cvlib_image = draw_bbox(cv_image, bbox, label, conf)
 
             img_to_pub = self.bridge.cv2_to_imgmsg(out_image, "bgr8")
             img_to_pub.header = data.header
@@ -110,9 +144,9 @@ class DetectBall(Node):
             img_to_pub.header = data.header
             self.image_tuning_pub.publish(img_to_pub)
 
-            img_to_pub = self.bridge.cv2_to_imgmsg(cvlib_image, "bgr8")
+            # img_to_pub = self.bridge.cv2_to_imgmsg(cvlib_image, "bgr8")
             img_to_pub.header = data.header
-            self.image_cvlib_pub.publish(img_to_pub)
+            # self.image_cvlib_pub.publish(img_to_pub)
 
             point_out = Point()
 
@@ -136,7 +170,6 @@ class DetectBall(Node):
                 self.ball_pub.publish(point_out) 
         except CvBridgeError as e:
             print(e)  
-
 
 def main(args=None):
 

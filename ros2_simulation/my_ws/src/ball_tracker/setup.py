@@ -27,6 +27,7 @@ setup(
             'detect_ball_3d = ball_tracker.detect_ball_3d:main',
             'follow_path = ball_tracker.follow_path:main',
             'detect_path = ball_tracker.detect_path:main',
+            'model_image = ball_tracker.model_image:main',
         ],
     },
 )
