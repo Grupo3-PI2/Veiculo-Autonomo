@@ -1,0 +1,9 @@
+https://github.com/sukesh-ak/setup-mosquitto-with-docker
+
+mosquitto_pub -h localhost -t test/topic -m "Hello, MQTT!"
+mosquitto_sub -h localhost -t test/topic
+https://stackoverflow.com/questions/69987128/cannot-connect-to-mqtt-broker-from-reactjs
+
+
+
+mosquitto_sub -h localhost -t robot/commands

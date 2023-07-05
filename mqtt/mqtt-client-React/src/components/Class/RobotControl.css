@@ -1,0 +1,138 @@
+.RobotControl {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.ButtonContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 300px;
+}
+
+.Button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #4caf50;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.Button:hover {
+    background-color: #45a049;
+}
+
+.Button:active {
+    background-color: #3c903c;
+}
+
+.ArrowIcon {
+    margin-bottom: 5px;
+    width: 20px;
+    height: 20px;
+}
+
+.ArrowUp {
+    transform: rotate(-90deg);
+}
+
+.ArrowDown {
+    transform: rotate(90deg);
+}
+
+.ArrowLeft {
+    transform: rotate(180deg);
+}
+
+.ArrowRight {
+    transform: rotate(0deg);
+}
+
+.ButtonContainer button:first-child {
+    order: 1;
+}
+
+.ButtonContainer button:last-child {
+    order: 4;
+}
+
+.ButtonStart {
+    background-color: #2196f3;
+    margin-right: 60px;
+}
+
+.ButtonStop {
+    background-color: #f44336;
+}
+
+.ButtonStop:active {
+    background-color: #d32f2f;
+}
+
+.ButtonStop:hover {
+    background-color: #d32f2f;
+}
+
+.ButtonStart:active {
+    background-color: #1976d2;
+}
+
+.ButtonStart:hover {
+    background-color: #1976d2;
+}
+
+.SpeedContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    color: #fff;
+}
+
+.CurrentSpeed {
+    margin-right: 10px;
+}
+
+.SpeedButtons {
+    display: flex;
+}
+
+.SpeedButton {
+    margin-right: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 25px;
+    background-color: #f44336;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 50px;
+}
+
+.SpeedButton:hover {
+    background-color: #2980b9;
+}
+
+.SpeedButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.Command {
+    margin-top: 60px;
+}
