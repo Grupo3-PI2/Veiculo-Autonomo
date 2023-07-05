@@ -51,7 +51,7 @@ if __name__ == '__main__':
             dist = distance(SD1_GPIO_TRIGGER,SD1_GPIO_ECHO)
             print ("Measured Distance de SD1 = %.1f cm" % dist)
             time.sleep(0.001)
-            dist = distance(SD2_GPIO_TRIGGER,SD2_GPIO_ECHO)
+#            dist = distance(SD2_GPIO_TRIGGER,SD2_GPIO_ECHO)
             print ("Measured Distance de SD2 = %.1f cm" % dist)
             time.sleep(0.001)
 

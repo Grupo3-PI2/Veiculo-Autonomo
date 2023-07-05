@@ -3,7 +3,7 @@ import sys
 
 EMULATE_HX711=False
 
-referenceUnit = 1
+referenceUnit = 3.68
 
 if not EMULATE_HX711:
     import RPi.GPIO as GPIO
