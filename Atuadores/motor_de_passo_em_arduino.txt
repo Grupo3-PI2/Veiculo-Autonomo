@@ -4,8 +4,8 @@
 #define MS3 10 /* Seleciona a resolução do passo */
 #define RST 9 /* Desativa os drivers de saída   */
 #define SLP 8 /* Inicia um descanso para algumas funções do drive */
-#define STP 3 /* Avanço do passo */
-#define DIR 4 /* Direção do passo  */
+#define DIR 7 /* Direção do passo  */
+#define STP 6 /* Avanço do passo */
 /*---- Variáveis de controle ---- */
 int PPR = 0;      /* pulsos por resolução */
 int passo = 0;    /* passos */

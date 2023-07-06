@@ -6,7 +6,8 @@ GPIO.setmode(GPIO.BCM)
 sensor_left = 17
 sensor_right = 27
 
-GPIO.setup(sensor, GPIO.IN)
+GPIO.setup(sensor_left, GPIO.IN)
+GPIO.setup(sensor_right, GPIO.IN)
 
 try:
 	while True:
