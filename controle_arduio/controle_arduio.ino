@@ -16,8 +16,8 @@
 #define linha_L      1
 #define linha_R      0
 
-short int sen_linha_L = 0;
-short int sen_linha_R = 0;
+bool sen_linha_L = 0;
+bool sen_linha_R = 0;
 
 /*---- Variáveis de controle motor de passo---- */
 int PPR = 0;      /* pulsos por resolução */
@@ -28,6 +28,7 @@ int temp = 1000;  /* tempo entre os passos */
 UltraSonicDistanceSensor sen_dist_L(TRIGGER_SL, ECHO_SL), sen_dist_R(TRIGGER_SR, ECHO_SR);
 
 void mpu_begin();
+void motoPassoBegin();
 void getMpuData();
 void pegar_distancias();
 
@@ -37,15 +38,7 @@ const int MPU = 0x68;
 int AcX, AcY, AcZ, GyX, GyY, GyZ;
 
 void setup() {
-  pinMode(ENA, OUTPUT);
-  pinMode(MS1, OUTPUT);
-  pinMode(MS2, OUTPUT);
-  pinMode(MS3, OUTPUT);
-  pinMode(STP, OUTPUT);
-  pinMode(DIR, OUTPUT);
-  digitalWrite(SLP, LOW);   /* Sleep desabilitado */
-  digitalWrite(DIR, HIGH);  /* Sentido Horário habilitado */
-  digitalWrite(RST, HIGH);  /* RST habilitado */
+  //  motoPassoBegin();
   //Setamos os pinos dos seguidores de linha como entrada
   pinMode(linha_L, INPUT);
   pinMode(linha_R, INPUT);
@@ -66,12 +59,21 @@ void loop() {
 
   //////////////////////////////////////////////////
   // MPU
-  getMpuData();
+//  getMpuData();
   ////////////////////////////////////////////////////////////
   // sensores de Distancia
   pegar_distancias();
+  // Seguidor de linha
+  sen_linha_L = digitalRead(linha_L);
+  sen_linha_R = digitalRead(linha_R);
+  Serial.print(F("Linha esquerda")); Serial.println(sen_linha_L);
+  Serial.print(F("Linha direita")); Serial.println(sen_linha_R);
+
+  delay(300);
+
 
 }
+////Valores distâncias////////////////////////////////////////////////////////
 void pegar_distancias() {
   //Cria variavel do tipo int
   int distancia = 0;
@@ -79,9 +81,9 @@ void pegar_distancias() {
   distancia = sen_dist_L.measureDistanceCm();
   Serial.print(F("L_dist: "));
   Serial.println(distancia);
-  distancia = sen_dist_R.measureDistanceCm();
-  Serial.print(F("R_dist: "));
-  Serial.println(distancia);
+  //  distancia = sen_dist_R.measureDistanceCm();
+  //  Serial.print(F("R_dist: "));
+  //  Serial.println(distancia);
 }
 void mpu_begin() {
   Wire.begin();
@@ -91,6 +93,18 @@ void mpu_begin() {
   //Inicializa o MPU-6050
   Wire.write(0);
   Wire.endTransmission(true);
+}
+
+void motoPassoBegin() {
+  pinMode(ENA, OUTPUT);
+  pinMode(MS1, OUTPUT);
+  pinMode(MS2, OUTPUT);
+  pinMode(MS3, OUTPUT);
+  pinMode(STP, OUTPUT);
+  pinMode(DIR, OUTPUT);
+  digitalWrite(SLP, LOW);   /* Sleep desabilitado */
+  digitalWrite(DIR, HIGH);  /* Sentido Horário habilitado */
+  digitalWrite(RST, HIGH);  /* RST habilitado */
 }
 void getMpuData() {
   // MPU

@@ -35,7 +35,7 @@ void loop()
 
 void sixteenth()
 {                      /* Em sixteenth - 3200 passos */
-  PPR = 500;
+  PPR = 500; // limete para não quebrar o volante
   Serial.println("Modo Sixteenth - STEP (1 / 16)");
   digitalWrite(MS1, HIGH);
   digitalWrite(MS2, HIGH);
