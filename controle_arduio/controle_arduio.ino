@@ -15,14 +15,16 @@
 #define ECHO_SR      2
 #define linha_L      1
 #define linha_R      0
+//#define max_passo 500 /* pulsos por resolução */
+#define temp 1000
 
 bool sen_linha_L = 0;
 bool sen_linha_R = 0;
 
 /*---- Variáveis de controle motor de passo---- */
-int PPR = 0;      /* pulsos por resolução */
 int passo = 0;    /* passos */
-int temp = 1000;  /* tempo entre os passos */
+
+
 
 // Inicializa o sensor usando os pinos TRIGGER and ECHO.
 UltraSonicDistanceSensor sen_dist_L(TRIGGER_SL, ECHO_SL), sen_dist_R(TRIGGER_SR, ECHO_SR);
@@ -59,7 +61,7 @@ void loop() {
 
   //////////////////////////////////////////////////
   // MPU
-//  getMpuData();
+  getMpuData();
   ////////////////////////////////////////////////////////////
   // sensores de Distancia
   pegar_distancias();
@@ -68,8 +70,18 @@ void loop() {
   sen_linha_R = digitalRead(linha_R);
   Serial.print(F("Linha esquerda")); Serial.println(sen_linha_L);
   Serial.print(F("Linha direita")); Serial.println(sen_linha_R);
+  if (sen_linha_L) {
+    esquerda();
+  }
+  else if (sen_linha_R) {
+    direita();
+  }
+  else {
+  Serial.println(F("Estou seguindo a linha"));
+  }
 
-  delay(300);
+
+  //  delay(500);
 
 
 }
@@ -128,4 +140,68 @@ void getMpuData() {
   Serial.print(F("GyX: ")); Serial.println(GyX);
   Serial.print(F("GyY: ")); Serial.println(GyY);
   Serial.print(F("GyZ: ")); Serial.println(GyZ);
+}
+
+
+////////////////////////////////
+
+
+
+void direita() {
+  // max_passo = 500; // limete para não quebrar o volante
+  // passo = 0;
+  passo++;
+  if (passo >= 500) {
+    passo = 500;
+  }
+  else {
+    Serial.println("Modo Sixteenth - STEP (1 / 16)");
+    digitalWrite(MS1, HIGH);
+    digitalWrite(MS2, HIGH);
+    digitalWrite(MS3, HIGH);
+    Serial.println("Sentido - Horario");
+    digitalWrite(DIR, HIGH);
+    digitalWrite(STP, LOW);
+    delayMicroseconds(temp); /* Tempo em Microseconds */
+    digitalWrite(STP, HIGH);
+    delayMicroseconds(temp);
+    ena2();
+    delay(20);
+  }
+}
+
+void esquerda() {
+  // max_passo = 500; // limete para não quebrar o volante
+  // passo = 0;
+  passo--;
+  if (passo <= -500) {
+    passo = -500;
+  }
+  else {
+    Serial.println("Modo Sixteenth - STEP (1 / 16)");
+    digitalWrite(MS1, HIGH);
+    digitalWrite(MS2, HIGH);
+    digitalWrite(MS3, HIGH);
+    Serial.println("Sentido - Horario");
+    digitalWrite(DIR, LOW);
+    digitalWrite(STP, LOW);
+    delayMicroseconds(temp); /* Tempo em Microseconds */
+    digitalWrite(STP, HIGH);
+    delayMicroseconds(temp);
+    ena2();
+    delay(20);
+  }
+}
+
+void ena2() {
+  digitalWrite(ENA, HIGH);  /* Ativa o A4988 */
+  delay(10);
+}
+
+void rst()  {      /* Reseta os drivers */
+  digitalWrite(RST, LOW);
+  delay(10);
+  digitalWrite(RST, HIGH);
+  delay(10);
+  Serial.println("Reset OK");
 }
