@@ -92,7 +92,8 @@ void setup()
   digitalWrite(SLP, LOW);   /* Sleep desabilitado */
   digitalWrite(DIR, HIGH);  /* Sentido Horário habilitado */
   digitalWrite(RST, HIGH);  /* RST habilitado */
-
+	pinMode(linha_L, INPUT);
+	pinMode(linha_R, INPUT);
   // SETUP MOTOR DC + ULTASSONICO
   Motor2.Pinout(17,16); 
   pinMode(echoPin, INPUT); //DEFINE O PINO COMO ENTRADA (RECEBE)

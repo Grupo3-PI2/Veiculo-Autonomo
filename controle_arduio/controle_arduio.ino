@@ -38,7 +38,8 @@ void esquerda();
 void direita();
 // Inicializa o sensor usando os pinos TRIGGER and ECHO.
 //UltraSonicDistanceSensor sen_dist_L(TRIGGER_SL, ECHO_SL), sen_dist_R(TRIGGER_SR, ECHO_SR);
-Ultrasonic sen_distL(11, 10), sen_distR(13, 12);
+Ultrasonic sen_distL(11, 10);
+Ultrasonic sen_distR(13, 12);
 
 void mpu_begin();
 void motoPassoBegin();
@@ -86,6 +87,13 @@ void setup() {
   //Setamos os pinos dos seguidores de linha como entrada
   pinMode(linha_L, INPUT);
   pinMode(linha_R, INPUT);
+//  pinMode(TRIGGER_SL, OUTPUT);
+//  pinMode(ECHO_SL, INPUT);
+//  sen_distL.Ultrasonic(TRIGGER_SL,ECHO_SL);
+//  pinMode(TRIGGER_SR, OUTPUT);
+//  pinMode(ECHO_SR, INPUT);
+//  sen_distR.Ultrasonic(TRIGGER_SR,ECHO_SR);
+  
   ///////////pinagem do motor de passo
   motoPassoBegin();
 
@@ -110,7 +118,7 @@ void loop() {
   //  getMpuData();
   ////////////////////////////////////////////////////////////
   // sensores de Distancia
-//  pegar_distancias();
+  pegar_distancias();
 
   // Seguidor de linha
   sen_linha_L = digitalRead(linha_L);
