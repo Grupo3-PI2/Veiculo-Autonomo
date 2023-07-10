@@ -1,0 +1,146 @@
+// ULTRASSONICO + DC
+
+#include <Ultrasonic.h>
+// ==================================== LEDS DE TESTE ====================================
+
+int led_stop = 6;
+int led_go = 7;
+
+// ==================================== VARIÁVEIS DO ULTRASSONICO ====================================
+
+Ultrasonic ultrassom(2, 3); // ////////// (TRIG, ECHO)
+Ultrasonic ultrassom2(4, 5); //Cria o objeto ultrassom, do tipo Ultrassonic, e define os pinos onde está ligado o TRIG(pino 5) e o ECHO(pino 4) respectivamente
+
+long distancia; //cria a variável distancia do tipo long
+long distancia_2; //cria a variável distancia do tipo long
+
+
+// ==================================== OUTRAS VARIÁVEIS ====================================
+
+int v = 0; // VARIÁVEL DA VELOCIDADE DO CARRINHO 
+
+// ==================================== FUNÇÃO DO MOTOR DC - DECLARAÇÃO DA CLASSE ====================================
+
+// Iremos fazer uma classe para facilitar o uso da ponte H L298N na manipulação dos motores na função Setup e Loop.
+class DCMotor {  
+  int spd = 255, pin1, pin2;
+  
+  public:  
+  
+    void Pinout(int in1, int in2){ // Pinout é o método para a declaração dos pinos que vão controlar o objeto motor
+      pin1 = in1;
+      pin2 = in2;
+      pinMode(pin1, OUTPUT);
+      pinMode(pin2, OUTPUT);
+      }   
+    void Speed(int in1){ // Speed é o método que irá ser responsável por salvar a velocidade de atuação do motor
+      spd = in1;
+      }     
+    void Forward(){ // Forward é o método para fazer o motor girar para frente
+      analogWrite(pin1, spd);
+      digitalWrite(pin2, LOW);
+      }   
+    void Backward(){ // Backward é o método para fazer o motor girar para trás
+      digitalWrite(pin1, LOW);
+      analogWrite(pin2, spd);
+      }
+    void Stop(){ // Stop é o metodo para fazer o motor ficar parado.
+      digitalWrite(pin1, LOW);
+      digitalWrite(pin2, LOW);
+      }
+   };
+   DCMotor Motor2; // Criação de dois objetos motores, já que usaremos dois motores, e eles já estão prontos para receber os comandos já configurados acima.
+
+
+// ==================================== FUNÇÃO SETUP  ====================================
+ 
+void setup() {
+  Serial.begin(9600);
+  Motor2.Pinout(11,12); 
+  pinMode(led_stop, OUTPUT);
+  pinMode(led_go, OUTPUT);
+
+}
+
+// ==================================== FUNÇÃO DO ULTRASSONICO - RETORNA A DISTANCIA ====================================
+void hcsr04(){ //Captando a distância do sensor ultrassonico 1
+  distancia = ultrassom.Ranging(CM);//ultrassom.Ranging(CM) retorna a distancia em centímetros(CM)
+}
+
+void hcsr04_2(){ //Captando a distância do sensor ultrassonico 2
+  distancia_2 = ultrassom2.Ranging(CM);//ultrassom.Ranging(CM) retorna a distancia em centímetros(CM)
+}
+
+
+void loop() {
+  hcsr04();
+  delay(10);
+  hcsr04_2();
+  delay(10);
+  Serial.print("Distancia 1"); //IMPRIME O TEXTO NO MONITOR SERIAL
+  Serial.print(distancia);
+ ////IMPRIME NO MONITOR SERIAL A DISTÂNCIA MEDIDA
+  Serial.println("cm"); //IMPRIME O TEXTO NO MONITOR SERIAL
+
+  Serial.print("Distancia 2 "); //IMPRIME O TEXTO NO MONITOR SERIAL
+  Serial.print(distancia_2);
+ ////IMPRIME NO MONITOR SERIAL A DISTÂNCIA MEDIDA 
+  Serial.println("cm"); //IMPRIME O TEXTO NO MONITOR SERIAL
+
+  if (distancia < 70 || distancia_2 < 70 ){
+     Motor2.Stop();
+     delay(10);
+  }
+  else if(distancia < 90 || distancia_2 < 90 ){
+    Motor2.Speed(80);// A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+    Motor2.Backward();
+    delay(10);
+  }
+  else if(distancia < 110 || distancia_2 < 110){
+    Motor2.Speed(100);// A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+    Motor2.Backward();   
+    delay(10);
+  }
+  
+  else if (distancia < 130 || distancia_2 < 130) {
+    Motor2.Speed(130);// A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+    Motor2.Backward();
+    delay(10);
+  }
+    else{
+    Motor2.Speed(160);// A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+    Motor2.Backward();
+    digitalWrite(led_stop, HIGH);
+    digitalWrite(led_go, HIGH);
+    delay(10);
+  }
+ 
+  if(distancia_2 < 60){
+    digitalWrite(led_stop, HIGH);
+    delay(10);
+
+  }
+  else {
+    digitalWrite(led_stop, LOW);
+    delay(10);
+  }
+
+  if(distancia < 60){
+    digitalWrite(led_go, HIGH);
+    delay(10);
+  }
+  else {
+    digitalWrite(led_go, LOW);
+    delay(10);
+  }
+
+
+
+
+}
+
+
+
+// distancia > 80 -> Vou para 80v 
+//  80 < distancia > 100 -> Vou para 100v
+// distanci > 100 --> Vou para 155  
