@@ -126,19 +126,27 @@ void loop()
     distancia_final = distancia_2;
   }
 
-  if (Serial.available()) {// recebe a msg via serial e julga de acordo
+
+
+
+  if (Serial.available()) {
     read_msg = Serial.readString();
-    if (read_msg[0] == 'G')//Aciona o motor DC(podemos trocar pela função Motor2.Forward
+    if (read_msg[0] == 'G')
       stateDC = true;
-    else if (read_msg[0] == 'S')//Desliga o motor DC(podemos trocar pela função Motor2.Stop
+    else if (read_msg[0] == 'S')
       stateDC = false;
-    else if (read_msg[0] == 'U') { //atualiza e printa os dados do MPU
+    else if (read_msg[0] == 'U') {
       mpu6050.update();
       printMpuData();
     }
-    else //Aponta erro de mensagem estranha
-      Serial.println(F("Erro de mensagem não padronizada recebida"));
+    else
+      Serial.println(F("ERROR"));
 
+//    Serial.print(F(":"));
+    Serial.println(stateDC);
+  }
+
+     
     //Serial.print("Distancia 1:"); //IMPRIME O TEXTO NO MONITOR SERIAL
     //Serial.print(result);
     ////IMPRIME NO MONITOR SERIAL A DISTÂNCIA MEDIDA
@@ -362,11 +370,17 @@ void hcsr04() {
   delay(100); //INTERVALO DE 500 MILISSEGUNDOS
 }
 void printMpuData() {
-  Serial.println(F("============INIT DATA MPU====================="));
+  //  Serial.println(F("============INIT DATA MPU====================="));
   //    Serial.print("temp : ");Serial.println(mpu6050.getTemp());
-  Serial.print(F("accX : ")); Serial.println(mpu6050.getAccX());
-  Serial.print(F("accY : ")); Serial.println(mpu6050.getAccY());
-  Serial.print(F("accZ : ")); Serial.println(mpu6050.getAccZ());
+//  Serial.print(F("accX : ")); 
+  Serial.print(mpu6050.getAccX());
+      Serial.print(F(":"));
+//  Serial.print(F(" accY : ")); 
+  Serial.print(mpu6050.getAccY());
+      Serial.print(F(":"));
+//  Serial.print(F(" accZ : ")); 
+  Serial.print(mpu6050.getAccZ());
+      Serial.print(F(":"));
   //    Serial.print("gyroX : ");Serial.print(mpu6050.getGyroX());
   //    Serial.print("gyroY : ");Serial.print(mpu6050.getGyroY());
   //    Serial.print("gyroZ : ");Serial.println(mpu6050.getGyroZ());
@@ -375,8 +389,8 @@ void printMpuData() {
   //    Serial.print("gyroAngleX : ");Serial.print(mpu6050.getGyroAngleX());
   //    Serial.print("\tgyroAngleY : ");Serial.print(mpu6050.getGyroAngleY());
   //    Serial.print("\tgyroAngleZ : ");Serial.println(mpu6050.getGyroAngleZ());
-  Serial.print(F("angleX : ")); Serial.println(mpu6050.getAngleX());
-  Serial.print(F("angleY : ")); Serial.println(mpu6050.getAngleY());
-  Serial.print(F("angleZ : ")); Serial.println(mpu6050.getAngleZ());
-  Serial.println(F("============+END DATA MPU=====================\n"));
+  //  Serial.print(F("angleX : ")); Serial.println(mpu6050.getAngleX());
+  //  Serial.print(F("angleY : ")); Serial.println(mpu6050.getAngleY());
+  //  Serial.print(F("angleZ : ")); Serial.println(mpu6050.getAngleZ());
+  //  Serial.println(F("============+END DATA MPU=====================\n"));
 }
