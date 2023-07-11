@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
-broker_address = "192.168.0.18"
-broker_port = 1883
+broker_address = "192.168.0.107"
+broker_port = 1884
 topic = "command/directions"
 
 def on_connect(client, userdata, flags, rc):

@@ -7,78 +7,80 @@ import {
   TextInput,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import io from 'socket.io-client';
- 
+import Paho from 'paho-mqtt';
+
 import styles from "./styles";
 import { Alert } from "./components/alert";
-  
-const HomePageView = ({ ...props }) => {
+
+const HomePageView = ({ addNotification }) => {
   const [objectFound, setObjectFound] = useState(false);
   const [showFirstPage, setShowFirstPage] = useState(true);
   const [routeDistance, setRouteDistance] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [carProgress, setCarProgress] = useState({
-    progress: 0,
     speed: 0,
     isRunning: false,
     distance: 0,
   });
   const [socketConnectionError, setSocketConnectionError] = useState(false);
   const [objectDetected, setObjectDetected] = useState('');
-
-  const socketRef = useRef(null);
+  const [clientState, setClient] = useState(null);
 
   useEffect(() => {
-    connectToSocket();
+    connectToMQTT();
   }, []);
 
-  const connectToSocket = () => {
-    socketRef.current = io('http://192.168.239.237:4000');
+  const connectToMQTT = () => {
+    let client = new Paho.Client(
+      'localhost',
+      Number(9223),
+      "clientId-1"
+    );
 
-    socketRef.current.on('connect', () => {
-      console.log('Connected to socket');
-      setSocketConnectionError(false);
-    });
-
-    socketRef.current.on('connect_error', () => {
-      console.log('Connection error');
+    if (!client.isConnected()) {
       setSocketConnectionError(true);
-    });
+    }
 
-    socketRef.current.on('disconnect', () => {
-      console.log('Disconnected from socket');
+    client.connect({
+      onSuccess: function() {
+        console.log('connected');
+        setSocketConnectionError(false);
+        client.subscribe('test');
+        setClient(client);
+      },
+      useSSL: false,
+    });
+    client.onConnectionLost = function(responseObject) {
       setSocketConnectionError(true);
-    });
-
-    socketRef.current.on('carProgress', (progress) => {
-      console.log('Car progress:', progress);
-      setCarProgress(progress);
-    });
-
-    socketRef.current.on('objectFound', (progress) => {
-      setCarProgress(progress);
-      setObjectFound(true);
-    });
-
-    socketRef.current.on('objectRemoved', (progress) => {
-      console.log('Object removed:', progress);
-      setCarProgress(progress);
-      setObjectFound(false);
-    });
-
-    socketRef.current.on('objectDetected', (object) => {
-      console.log('Object detected:', object);
-      
-      if (object != 'outros') {
-        setObjectDetected(object);
-      } else {
-        setObjectDetected('');
-      }
-    });
-
-    return () => {
-      socketRef.current.disconnect();
+      console.log('connection lost: ', responseObject);
     };
+    client.onMessageArrived = function(message) {
+      console.log('Topic: ' + message.destinationName + ", Message: " + message.payloadString)
+
+      const topic = message.destinationName;
+      const payload = message.payloadString;
+
+      if (topic === 'test') {
+        console.log('test: ', payload);
+      } else if (topic === 'carProgress') {
+        console.log('carProgress: ', payload);
+        setCarProgress(JSON.parse(payload));
+      } else if (topic === 'objectFound') {
+        console.log('objectFound: ', payload);
+        setObjectFound(true);
+      } else if (topic === 'objectRemoved') {
+        console.log('objectRemoved: ', payload);
+        setObjectFound(false);
+      } else if (topic === 'objectDetected') {
+        console.log('objectDetected: ', payload);
+        
+        if (object != 'outros') {
+          setObjectDetected(object);
+        } else {
+          setObjectDetected('');
+        }
+      }
+    }
   };
 
   const handleStartCar = () => {
@@ -86,17 +88,50 @@ const HomePageView = ({ ...props }) => {
       return;
     }
 
-    socketRef.current.emit('startCar');
+    console.log('Starting car');
+    let topic = 'command/controls';
+    let message = 'control:start';
+    clientState.send(topic, message, 0, false)
+
+
+    setCarProgress(prevState => ({
+      ...prevState,
+      isRunning: true
+    }));
   };
 
   const handleStopCar = () => {
-    socketRef.current.emit('stopCar');
+    console.log('Stopping car');
+    let topic = 'command/controls';
+    let message = 'control:stop';
+    clientState.send(topic, message, 0, false)
+
+    setCarProgress(prevState => ({
+      ...prevState,
+      isRunning: false
+    }));
   };
 
   const handleResetCar = () => {
     setShowFirstPage(true);
-    socketRef.current.emit('resetCar');
     setObjectDetected('');
+
+    setCarProgress({
+      speed: 0,
+      isRunning: false,
+      distance: 0,
+    });
+
+    console.log('Stopping car');
+    let topic = 'command/controls';
+    let message = 'control:stop';
+    clientState.send(topic, message, 0, false)
+
+
+    setCarProgress(prevState => ({
+      ...prevState,
+      isRunning: false
+    }));
   };
 
   const getProgress = (carDistance) => {
@@ -118,7 +153,7 @@ const HomePageView = ({ ...props }) => {
   const handleRouteDistanceChange = (text) => {
     let cleanedText = text.replace(/[^0-9]/g, '');
     let number = parseInt(cleanedText, 10);
-  
+
     if (isNaN(number)) {
       number = 0;
     }
@@ -129,15 +164,16 @@ const HomePageView = ({ ...props }) => {
     } else {
       setErrorMessage('');
     }
-  
+
     setRouteDistance(number);
   };
 
-  // define iniciar
   const iniciar = () => {
     setShowFirstPage(false);
 
-    socketRef.current.emit('startPredict');
+    let topic = 'camera';
+    let message = 'start/predict';
+    clientState.send(topic, message, 0, false)
   };
 
   return (
@@ -152,7 +188,7 @@ const HomePageView = ({ ...props }) => {
       {socketConnectionError ? (
         <View style={[styles.container, styles.infoContainer]}>
           <Text style={styles.errorText}>Erro ao conectar com o servidor</Text>
-          <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={connectToSocket}>
+          <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={connectToMQTT}>
             <Text style={styles.btnText}>Tentar novamente</Text>
           </TouchableOpacity>
         </View>

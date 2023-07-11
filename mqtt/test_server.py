@@ -7,10 +7,17 @@ import cv2
 import time
 from picamera2 import Picamera2
 import libcamera
+import serial
 
 app = Flask(__name__)
 cors = CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*', async_mode='threading')
+s = serial.Serial('/dev/ttyACM0', 9600) # altere o nome, se necessário
+
+if not s.isOpen(): # caso a porta não esteja aberta
+    s.open()
+
+time.sleep(5)
 
 carProgress = {
     "progress": 0,
@@ -26,14 +33,18 @@ def handle_start_car():
     start_car()
 
 def start_car():
+    start_command = "S"
+    response = s.write(start_command.encode())
+    print("response: ", response);
+    while s.inWaiting()==0: pass
+    if  s.inWaiting()>0:
+        answer=str(s.readline())
+        print("---> {}".format(answer))
+
     if not carProgress["isRunning"]:
         carProgress["isRunning"] = True
 
         socketio.start_background_task(emit_car_progress, carProgress)
-
-@socketio.on('startPredict'):
-def handle_start_predict():
-    my_thread.start()
 
 # Emit car progress every second
 def emit_car_progress(carProgress):
@@ -57,9 +68,19 @@ def my_predict(labels):
     while True:
         picam2.capture_file("test.png")
         image = "./test.png"
-        result = predict(image) 
-        result
-        time.sleep(3)
+        result = predict(image)
+        maior = 0
+        maiorKey = ''
+        for key, value in result.items():
+            if value > maior:
+                maior = value
+                maiorKey = key
+        print(maiorKey) 
+        print(result)
+        socketio.emit('objectDetected', maiorKey)
+        socketio.sleep(2)
+
+    
 
 @socketio.on('stopCar')
 def handle_stop_car():
@@ -97,11 +118,10 @@ def object_removed():
     socketio.emit('objectRemoved', carProgress)
     return '', 200
 
+@socketio.on('startPredict')
 def object_detected():
-    objectDetected = request.get_json()["objectDetected"]
-    socketio.emit('objectDetected', objectDetected)
+    socketio.start_background_task(my_predict, labels)
 
-    return '', 200
 
 @socketio.on('connect')
 def handle_connect():
@@ -113,8 +133,8 @@ def handle_connect():
 def handle_disconnect():
     print('A client disconnected')
 
-
 labels = []
+
 if __name__ == '__main__':
     cv2.startWindowThread()
 
@@ -129,9 +149,7 @@ if __name__ == '__main__':
           learn = pickle.load(file)
 
     labels = learn.dls.vocab
-
-    socketio.run(app, host='192.168.0.101', port=4000)
-
-
-# Grab images as numpy arrays and leave everything else to OpenCV.
-
+    print("waiting")
+    time.sleep(20)
+   
+    socketio.run(app, host='192.168.43.237', port=4000)

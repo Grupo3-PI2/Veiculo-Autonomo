@@ -19,7 +19,7 @@ class RobotControl extends React.Component {
   }
 
   componentDidMount() {
-    this.mqttClient = mqtt.connect('ws://192.168.0.101:9333');
+    this.mqttClient = mqtt.connect('ws://localhost:9223');
 
     this.mqttClient.subscribe('robot/commands');
 
