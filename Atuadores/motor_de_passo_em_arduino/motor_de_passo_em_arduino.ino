@@ -10,7 +10,7 @@
 /*---- Variáveis de controle ---- */
 int PPR = 0;      /* pulsos por resolução */
 int passo = 0;    /* passos */
-int temp = 1000;  /* tempo entre os passos */
+int temp = 1000;  /* tempo enktre os passos */
 void setup()
 {
   pinMode(ENA, OUTPUT);
