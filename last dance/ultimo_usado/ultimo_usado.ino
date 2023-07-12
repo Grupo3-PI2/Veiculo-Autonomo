@@ -67,9 +67,10 @@ int temp = 1000; /* tempo entre os passos */
 
 bool sen_linha_L = 0;
 bool sen_linha_R = 0;
-bool end_curva = true;
+bool end_curval = true;
+bool end_curvar = true;
 
-unsigned long time1, time2, tdiff; // variáveis de tempo auxiliar(ajustar motor passo)
+unsigned long time1, time2, tdiff, tdiffl,tdiffr; // variáveis de tempo auxiliar(ajustar motor passo)
 
 
 void setup() {
@@ -88,6 +89,8 @@ void setup() {
   digitalWrite(DIR, HIGH); /* Sentido Horário habilitado */
   digitalWrite(RST, HIGH); /* RST habilitado */
   //  Serial.begin(9600);
+  tdiffl = 0;
+   tdiffr = 0;
   Serial.begin(9600);
   while (!Serial)
     ;
@@ -108,54 +111,54 @@ void loop() {
   // }
   sixteenth();
 
-  sen_linha_L = digitalRead(linha_L);
-  sen_linha_R = digitalRead(linha_R);
-  serialCom();
+  getLineStatus(); // pega estado do seguidor de linha
+  serialCom();// comunicação serial com a Rasp
 
-  lineControl();
+  lineControl();// controle de motor de passo e velocidade de acordo com estado
+  // da linha pra fazer curvas
+
   //rst();                    /* Inicia o void rst */
+
 }
-void serialCom(){
+void serialCom() {
   if (Serial.available()) {
     read_msg = Serial.readString();
-    if (read_msg[0] == 'G')
-      stateDC = true;
-    else if (read_msg[0] == 'S')
-      stateDC = false;
+    if (read_msg[0] == 'G' || read_msg[0] == 'S')
+      Serial.println(stateDC);
     else if (read_msg[0] == 'U') {
       mpu6050.update();
       printMpuData();
+      Serial.println(stateDC);
     }
     else
       Serial.println(F("ERROR"));
-
     //    Serial.print(F(":"));
-    Serial.println(stateDC);
+    //    Serial.println(stateDC);
   }
 }
-
 void lineControl() {
   if (distancia > 30 && distancia2 > 30) {
     time1 = millis();
     while (sen_linha_L && !sen_linha_R) {
       // Serial.print(F("estou virrando pra esuerda\n"));
-      end_curva = false;
+      end_curvar = false;
       movemin();
-      if (millis() < (time1 + 1100)) {
+      if (millis() < (time1 + 1100 - tdiffr)) {
         volta_esquerda();
         time2 = millis();
       }
       //      Serial.print(F("passo na volta pra esquerda:"));
       //      Serial.println(passo);
-      sen_linha_L = digitalRead(linha_L);
-      sen_linha_R = digitalRead(linha_R);
+      getLineStatus();
       //      time2 = millis();
     }
     tdiff = time2 - time1;
-    if (!end_curva) {
+    if (!end_curvar) {
       unsigned long int aux = millis();
       while (millis() < (aux + tdiff)) {
         volta_direita();
+        getLineStatus();
+        
         //        Serial.print(F("passo no aajuste:"));
         //        Serial.println(passo);
       }
@@ -163,22 +166,21 @@ void lineControl() {
       ena2();
       delay(20);
       ena();
-      end_curva = true;
+      end_curvar = true;
     }
     while (!sen_linha_L && sen_linha_R) {
       // Serial.print(F("estou virrando pra direita\n"));
-      end_curva = false;
+      end_curval = false;
       movemin();
-      if (millis() < (time1 + 1100)) {
+      if (millis() < (time1 + 1100 - tdiffl)) {
         volta_direita();
         time2 = millis();
       }
-      sen_linha_L = digitalRead(linha_L);
-      sen_linha_R = digitalRead(linha_R);
+      getLineStatus();
       //      time2 = millis();
     }
     tdiff = time2 - time1;
-    if (!end_curva) {
+    if (!end_curval) {
       unsigned long int aux = millis();
       while (millis() < (aux + tdiff)) {
         volta_esquerda();
@@ -189,7 +191,7 @@ void lineControl() {
       ena2();
       delay(20);
       ena();
-      end_curva = true;
+      end_curval = true;
     }
     if (!sen_linha_L && !sen_linha_R) {
       movemax();
@@ -199,7 +201,10 @@ void lineControl() {
     stop();
   }
 }
-
+void getLineStatus() {
+  sen_linha_L = digitalRead(linha_L);
+  sen_linha_R = digitalRead(linha_R);
+}
 void movemin() {
   Motor2.Speed(108);  // A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
   Motor2.Backward();
