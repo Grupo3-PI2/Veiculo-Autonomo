@@ -1,6 +1,5 @@
 #include "Ultrasonic.h"  //INCLUSÃO DA BIBLIOTECA NECESSÁRIA PARA FUNCIONAMENTO DO CÓDIGO
-#include <MPU6050_tockn.h>
-#include <Wire.h>
+
 const int echoPin = 13;   //PINO DIGITAL UTILIZADO PELO HC-SR04 ECHO(RECEBE)
 const int trigPin = 12;   //PINO DIGITAL UTILIZADO PELO HC-SR04 TRIG(ENVIA)
 const int echoPin2 = 16;  //PINO DIGITAL UTILIZADO PELO HC-SR04 ECHO(RECEBE)
@@ -11,10 +10,6 @@ Ultrasonic ultrasonic2(trigPin, echoPin);  //INICIALIZANDO OS PINOS DO ARDUINO
 
 int distancia;   //VARIÁVEL DO TIPO INTEIRO
 int distancia2;  //VARIÁVEL DO TIPO INTEIRO
-
-MPU6050 mpu6050(Wire); // declaraçãod e objeto Acelerômetro
-String read_msg; // Leitura do monitor serial
-bool stateDC = false;// estado do motor DC (andando ou parado)[talvez não seja preciso]
 
 // Iremos fazer uma classe para facilitar o uso da ponte H L298N na manipulação dos motores na função Setup e Loop.
 class DCMotor {
@@ -69,7 +64,7 @@ bool sen_linha_L = 0;
 bool sen_linha_R = 0;
 bool end_curva = true;
 
-unsigned long time1, time2, tdiff; // variáveis de tempo auxiliar(ajustar motor passo)
+unsigned long time1, time2, tdiff, tdiff2 = 0; // variáveis de tempo auxiliar(ajustar motor passo)
 
 
 void setup() {
@@ -88,12 +83,6 @@ void setup() {
   digitalWrite(DIR, HIGH); /* Sentido Horário habilitado */
   digitalWrite(RST, HIGH); /* RST habilitado */
   //  Serial.begin(9600);
-  Serial.begin(9600);
-  while (!Serial)
-    ;
-  Wire.begin();
-  mpu6050.begin();// inicia o acelerômetro
-  mpu6050.calcGyroOffsets(true);//calibra o acelerômetro
 }
 
 void loop() {
@@ -110,38 +99,15 @@ void loop() {
 
   sen_linha_L = digitalRead(linha_L);
   sen_linha_R = digitalRead(linha_R);
-  serialCom();
 
-  lineControl();
-  //rst();                    /* Inicia o void rst */
-}
-void serialCom(){
-  if (Serial.available()) {
-    read_msg = Serial.readString();
-    if (read_msg[0] == 'G')
-      stateDC = true;
-    else if (read_msg[0] == 'S')
-      stateDC = false;
-    else if (read_msg[0] == 'U') {
-      mpu6050.update();
-      printMpuData();
-    }
-    else
-      Serial.println(F("ERROR"));
-
-    //    Serial.print(F(":"));
-    Serial.println(stateDC);
-  }
-}
-
-void lineControl() {
-  if (distancia > 30 && distancia2 > 30) {
+  if (distancia > 20 && distancia2 > 20) {
     time1 = millis();
+
     while (sen_linha_L && !sen_linha_R) {
       // Serial.print(F("estou virrando pra esuerda\n"));
       end_curva = false;
       movemin();
-      if (millis() < (time1 + 1100)) {
+      if (millis() < (time1 + 1100 - tdiff2)) {
         volta_esquerda();
         time2 = millis();
       }
@@ -156,9 +122,19 @@ void lineControl() {
       unsigned long int aux = millis();
       while (millis() < (aux + tdiff)) {
         volta_direita();
+        sen_linha_L = digitalRead(linha_L);
+        sen_linha_R = digitalRead(linha_R);
+        if (linha_R) {
+          tdiff2 = millis() - (aux + tdiff);
+          break;
+        }
+        else {
+          tdiff2 = 0;
+        }
         //        Serial.print(F("passo no aajuste:"));
         //        Serial.println(passo);
       }
+
       passo = 0; /* valor de passso muda pra 0 */
       ena2();
       delay(20);
@@ -169,7 +145,7 @@ void lineControl() {
       // Serial.print(F("estou virrando pra direita\n"));
       end_curva = false;
       movemin();
-      if (millis() < (time1 + 1100)) {
+      if (millis() < (time1 + 1100 - tdiff2)) {
         volta_direita();
         time2 = millis();
       }
@@ -182,6 +158,15 @@ void lineControl() {
       unsigned long int aux = millis();
       while (millis() < (aux + tdiff)) {
         volta_esquerda();
+        sen_linha_L = digitalRead(linha_L);
+        sen_linha_R = digitalRead(linha_R);
+        if (linha_L) {
+          tdiff2 = millis() - (aux + tdiff);
+          break;
+        }
+        else {
+          tdiff2 = 0;
+        }
         //        Serial.print(F("passo no aajuste:"));
         //        Serial.println(passo);
       }
@@ -198,23 +183,24 @@ void lineControl() {
   else {
     stop();
   }
+  //rst();                    /* Inicia o void rst */
+}
+void ajuste_esquerda() {
+
 }
 
 void movemin() {
-  Motor2.Speed(108);  // A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+  Motor2.Speed(100);  // A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
   Motor2.Backward();
-  stateDC = true;
 }
 
 void movemax() {
-  Motor2.Speed(120);  // A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
+  Motor2.Speed(130);  // A velocidade do motor pode variar de 64 a 255, onde 255 é a velocidade máxima e 64 o mínimo.
   Motor2.Backward();
-  stateDC = true;
 }
 
 void stop() {
   Motor2.Stop();
-  stateDC = false;
   delay(100);
 }
 
@@ -378,13 +364,4 @@ void volta_direita() {
   // ena2();
   // delay(20);
   // ena();
-}
-
-void printMpuData() {
-  Serial.print(mpu6050.getAccX());
-  Serial.print(F(":"));
-  Serial.print(mpu6050.getAccY());
-  Serial.print(F(":"));
-  Serial.print(mpu6050.getAccZ());
-  Serial.print(F(":"));
 }
