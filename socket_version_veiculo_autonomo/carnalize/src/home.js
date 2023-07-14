@@ -69,7 +69,10 @@ const HomePageView = ({ ...props }) => {
     socketRef.current.on('objectDetected', (object) => {
       console.log('Object detected:', object);
       
-      if (object != 'outros') {
+      if (object == 'Placa Pare'){
+        socketRef.current.emit('stopCar');
+        setObjectDetected(object);
+      } else if (object != 'outros') {
         setObjectDetected(object);
       } else {
         setObjectDetected('');
